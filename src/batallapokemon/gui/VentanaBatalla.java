@@ -190,8 +190,20 @@ public class VentanaBatalla extends JFrame {
         historial.append(r.texto());
         historial.setCaretPosition(historial.getDocument().getLength());
         refrescar();
-        // TODO Dev 3: si r.batallaTerminada() -> dialogo de victoria/derrota
-        // con opcion de reiniciar (motor.reiniciar() + historial.setText("")).
+
+        if (r.batallaTerminada()) {
+            String mensaje = r.jugadorGano() ? "GANASTE LA BATALLA!" : "PERDISTE LA BATALLA...";
+            int opcion = JOptionPane.showConfirmDialog(this,
+                    mensaje + "\n\n¿Queres jugar de nuevo?", "FIN DE LA BATALLA",
+                    JOptionPane.YES_NO_OPTION);
+            if (opcion == JOptionPane.YES_OPTION) {
+                motor.reiniciar();
+                historial.setText("");
+                refrescar();
+            } else {
+                dispose();
+            }
+        }
     }
 
     // ------------------------------------------------------- TODO  DEV 3
