@@ -23,7 +23,13 @@ public class Estadisticas {
         cambiosRealizados = 0; rivalesDerrotados = 0; propiosDerrotados = 0;
     }
 
-    public int getTurnos() { return turnos; }
+    public int getTurnos()            { return turnos; }
+    public int getDanioInfligido()    { return danioInfligido; }
+    public int getDanioRecibido()     { return danioRecibido; }
+    public int getObjetosUsados()     { return objetosUsados; }
+    public int getCambiosRealizados() { return cambiosRealizados; }
+    public int getRivalesDerrotados() { return rivalesDerrotados; }
+    public int getPropiosDerrotados() { return propiosDerrotados; }
 
     /** Resumen listo para mostrar en la GUI. */
     public String resumen() {

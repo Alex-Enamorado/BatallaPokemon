@@ -1,260 +1,171 @@
 package batallapokemon.logica;
 
 import batallapokemon.estructuras.ListaEnlazada;
+import batallapokemon.estructuras.ListaPokemon;
 import batallapokemon.modelo.Ataque;
 import batallapokemon.modelo.Entrenador;
 import batallapokemon.modelo.Objeto;
 import batallapokemon.modelo.Pokemon;
 import batallapokemon.modelo.Registro;
-
 import java.util.Random;
 
 /**
- * ===========================================================================
- * CARRIL DEV 2  -  MOTOR DE COMBATE
- * ===========================================================================
- * Reglas de este carril:
- * - Esta clase NO importa nada de javax.swing ni de batallapokemon.gui.
- * - Cada accion devuelve un ResultadoTurno con las lineas ya redactadas.
- * - Cada linea que se agrega al ResultadoTurno se agrega TAMBIEN al historial.
+ * Motor de combate por turnos.
+ *
+ * Un turno completo = accion del jugador (atacar, cambiar u objeto) seguida
+ * del ataque automatico del rival. No importa nada de javax.swing: cada
+ * accion devuelve un ResultadoTurno con las lineas ya redactadas y la GUI
+ * solo las muestra.
  */
 public class MotorBatalla {
 
-    private Entrenador jugador;
-    private Entrenador rival;
-    private ListaEnlazada<Registro> historial;
-    private Estadisticas estadisticas;
+    private final Entrenador jugador;
+    private final Entrenador rival;
+    private final ListaEnlazada<Registro> historial;
+    private final Estadisticas estadisticas;
+    private final Random azar;
     private int turno;
     private boolean terminada;
     private boolean gano;
-    private Random azar;
 
     public MotorBatalla(Entrenador jugador, Entrenador rival) {
         this.jugador = jugador;
         this.rival = rival;
         this.historial = new ListaEnlazada<Registro>();
         this.estadisticas = new Estadisticas();
-        this.turno = 1;
         this.azar = new Random();
+        this.turno = 1;
     }
 
-    // ---------------------------------------------------------------- LISTO
+    public Entrenador getJugador() { return jugador; }
+    public Entrenador getRival()   { return rival; }
+    public ListaEnlazada<Registro> getHistorial() { return historial; }
+    public Estadisticas getEstadisticas() { return estadisticas; }
+    public int getTurno() { return turno; }
+    public boolean batallaTerminada() { return terminada; }
+    public boolean jugadorGano() { return gano; }
 
-    public Entrenador getJugador() {
-        return jugador;
-    }
-
-    public Entrenador getRival() {
-        return rival;
-    }
-
-    public ListaEnlazada<Registro> getHistorial() {
-        return historial;
-    }
-
-    public Estadisticas getEstadisticas() {
-        return estadisticas;
-    }
-
-    public int getTurno() {
-        return turno;
-    }
-
-    public boolean batallaTerminada() {
-        return terminada;
-    }
-
-    public boolean jugadorGano() {
-        return gano;
-    }
-
-    /**
-     * Agrega la linea al resultado y al historial de una sola vez.
-     */
+    /** Agrega la linea al resultado y al historial de una sola vez. */
     private void registrar(ResultadoTurno r, String linea) {
         r.agregarLinea(linea);
         historial.insertar(new Registro(turno, linea));
     }
 
-    // ------------------------------------------------------- TODO  DEV 2
+    // ------------------------------------------------------------- ACCIONES
 
+    /** Ataque del jugador con el ataque en esa posicion, y respuesta del rival. */
     public ResultadoTurno atacar(int indiceAtaque) {
         ResultadoTurno r = new ResultadoTurno();
-        if (batallaTerminada()) {
-            r.invalidar("La batalla ya termino");
+        if (terminada) {
+            r.invalidar("La batalla ya termino.");
             return r;
         }
-        Pokemon activoJugador = jugador.getEquipo().getActivo();
-        Pokemon activoRival = jugador.getEquipo().getActivo();
-        Ataque ataqueJugador = activoJugador.getAtaques().obtener(indiceAtaque);
-        int danioJugador = calcularDanio(activoJugador, activoRival, ataqueJugador);
-        activoRival.recibirDanio(danioJugador);
 
-        r.agregarLinea(activoJugador.getNombre() + " utilizo " + ataqueJugador.getNombre() + ".");
-        r.agregarLinea(activoRival.getNombre() + " recibio " + danioJugador + " puntos de danio.");
-        r.agregarLinea(activoRival.getNombre() + ": " + activoRival.getHpActual() + "/" + activoRival.getHpMax() + " HP");
+        Pokemon atacante = jugador.getEquipo().getActivo();
+        Pokemon defensor = rival.getEquipo().getActivo();
+        if (atacante == null || defensor == null) {
+            r.invalidar("No hay Pokemon en combate.");
+            return r;
+        }
 
-        if (activoRival.estaDerrotado()) {
-            registrar(r, activoRival.getNombre() + "fue derrotado.");
-            Pokemon siguienteRival = rival.getEquipo().siguienteDisponible();
-            if (siguienteRival == null) {
-                terminada = true;
-                gano = true;
-                r.setBatallaTerminada(true);
-                r.setJugadorGano(true);
+        Ataque ataque = atacante.getAtaques().obtener(indiceAtaque);
+        if (ataque == null) {
+            r.invalidar("Ese ataque no existe.");
+            return r;
+        }
+
+        golpear(r, atacante, defensor, ataque, true);
+
+        if (defensor.estaDerrotado()) {
+            estadisticas.sumarRivalDerrotado();
+            registrar(r, defensor.getNombre() + " fue derrotado.");
+
+            Pokemon siguiente = rival.getEquipo().siguienteDisponible();
+            if (siguiente == null) {
+                terminar(r, true);
                 return r;
-
             }
-            rival.getEquipo().setActivo(siguienteRival.getNombre());
-            activoRival = siguienteRival;
+            rival.getEquipo().setActivo(siguiente.getNombre());
+            registrar(r, rival.getNombre() + " envia a " + siguiente.getNombre() + "!");
         }
-
-        Ataque ataqueRival = activoRival.getAtaques().obtener(azar.nextInt(activoRival.getAtaques().contar()));
-        int danioRival = calcularDanio(activoRival, activoJugador, ataqueRival);
-        activoJugador.recibirDanio(danioRival);
-
-        registrar(r, activoRival.getNombre() + " utilizo " + ataqueRival.getNombre() + ".");
-        registrar(r, activoJugador.getNombre() + " recibio " + danioRival + " puntos de danio.");
-        registrar(r, activoJugador.getNombre() + ": " + activoJugador.getHpActual() + "/" + activoJugador.getHpMax() + " HP");
-
-        if (activoJugador.estaDerrotado()) {
-            registrar(r, activoJugador.getNombre() + " fue derrotado.");
-            Pokemon siguienteJugador = jugador.getEquipo().siguienteDisponible();
-            if (siguienteJugador == null) {
-                terminada = true;
-                gano = false;
-                r.setBatallaTerminada(true);
-                r.setJugadorGano(false);
-            } else {
-                jugador.getEquipo().setActivo(siguienteJugador.getNombre());
-                r.setCambioForzado(true);
-            }
-
-        }
-
-    }
-
-
-    public int calcularDanio(Pokemon atacante, Pokemon defensor, Ataque ataque) {
-        double mult = TablaTipos.multiplicador(ataque.getTipo(), defensor.getTipo());
-        if (mult == 0) {
-            return 0;
-        }
-        double base = ((2.0 * atacante.getNivel() / 5.0 + 2) * ataque.getPotencia()
-                * atacante.getAtaque() / defensor.getDefensa()) / 50.0 + 2;
-        double variacion = 0.85 + azar.nextDouble() * 0.15;
-        int resultado = (int) (base * mult * variacion);
-        return Math.max(1, resultado);
-    }
-    /**
-     * TODO: cambiar el Pokemon activo del jugador.
-     *  - Usar jugador.getEquipo().setActivo(nombre); si devuelve false,
-     *    r.invalidar("Ese Pokemon esta derrotado") y NO gastar el turno.
-     *  - Si el cambio fue valido: registrar "Adelante, X!" y dejar que el
-     *    rival ataque (cambiar consume el turno).
-     */
-    public ResultadoTurno cambiarPokemon(String nombre) {
-        ResultadoTurno r = new ResultadoTurno();
-
-        if (batallaTerminada()) {
-            r.invalidar("La batalla ya termino");
-            return r;
-        }
-
-        boolean cambiado = jugador.getEquipo().setActivo(nombre);
-        if (!cambiado) {
-            r.invalidar("Ese Pokemon esta derrotado");
-            return r;
-        }
-
-        registrar(r, "Adelante, " + nombre + "!");
 
         turnoDelRival(r);
-
         return r;
     }
 
+    /** Cambia el Pokemon activo del jugador. Cambiar consume el turno. */
+    public ResultadoTurno cambiarPokemon(String nombre) {
+        ResultadoTurno r = new ResultadoTurno();
+        if (terminada) {
+            r.invalidar("La batalla ya termino.");
+            return r;
+        }
 
+        Pokemon activo = jugador.getEquipo().getActivo();
+        if (activo != null && activo.getNombre().equalsIgnoreCase(nombre)) {
+            r.invalidar(activo.getNombre() + " ya esta en combate.");
+            return r;
+        }
+        if (!jugador.getEquipo().setActivo(nombre)) {
+            r.invalidar("No podes enviar a ese Pokemon: esta derrotado.");
+            return r;
+        }
+
+        estadisticas.sumarCambio();
+        registrar(r, "Adelante, " + jugador.getEquipo().getActivo().getNombre() + "!");
+        turnoDelRival(r);
+        return r;
+    }
+
+    /** Usa un objeto sobre un Pokemon del equipo. Tambien consume el turno. */
     public ResultadoTurno usarObjeto(String nombreObjeto, String nombrePokemonDestino) {
         ResultadoTurno r = new ResultadoTurno();
-
-        if (batallaTerminada()) {
-            r.invalidar("La batalla ya termino");
+        if (terminada) {
+            r.invalidar("La batalla ya termino.");
             return r;
         }
 
         Objeto objeto = jugador.buscarObjeto(nombreObjeto);
         if (objeto == null || !objeto.disponible()) {
-            r.invalidar("No tenes ese objeto disponible");
+            r.invalidar("No te queda ese objeto.");
             return r;
         }
 
         Pokemon destino = jugador.getEquipo().buscar(nombrePokemonDestino);
         if (destino == null) {
-            r.invalidar("Ese Pokemon no existe en tu equipo");
+            r.invalidar("Ese Pokemon no esta en tu equipo.");
             return r;
         }
 
         if (objeto.esRevivir()) {
-            boolean revivido = destino.revivir(objeto.getCuracion());
-            if (!revivido) {
-                r.invalidar("Ese Pokemon no esta derrotado");
+            if (!destino.revivir(objeto.getCuracion())) {
+                r.invalidar(destino.getNombre() + " no esta derrotado.");
                 return r;
             }
+            registrar(r, destino.getNombre() + " revivio con " + destino.getEstadoHp() + " HP.");
         } else {
             if (destino.estaDerrotado()) {
-                r.invalidar("Ese Pokemon esta derrotado, no se le puede curar");
+                r.invalidar(destino.getNombre() + " esta derrotado: usa Revivir.");
                 return r;
             }
-            destino.curar(objeto.getCuracion());
+            int recuperado = destino.curar(objeto.getCuracion());
+            registrar(r, destino.getNombre() + " utilizo una " + objeto.getNombre() + ".");
+            registrar(r, "Recupero " + recuperado + " HP (" + destino.getEstadoHp() + ").");
         }
 
         objeto.descontar();
-        registrar(r, destino.getNombre() + " utilizo una " + objeto.getNombre() + ".");
-
+        estadisticas.sumarObjeto();
         turnoDelRival(r);
-
         return r;
     }
 
-    private void turnoDelRival(ResultadoTurno r) {
-        Pokemon activoJugador = jugador.getEquipo().getActivo();
-        Pokemon activoRival = rival.getEquipo().getActivo();
-
-        Ataque ataqueRival = activoRival.getAtaques().obtener(
-                azar.nextInt(activoRival.getAtaques().contar()));
-        int danioRival = calcularDanio(activoRival, activoJugador, ataqueRival);
-        activoJugador.recibirDanio(danioRival);
-
-        registrar(r, activoRival.getNombre() + " utilizo " + ataqueRival.getNombre() + ".");
-        registrar(r, activoJugador.getNombre() + " recibio " + danioRival + " puntos de danio.");
-        registrar(r, activoJugador.getNombre() + ": " + activoJugador.getEstadoHp() + " HP");
-
-        if (activoJugador.estaDerrotado()) {
-            registrar(r, activoJugador.getNombre() + " fue derrotado.");
-            Pokemon siguienteJugador = jugador.getEquipo().siguienteDisponible();
-            if (siguienteJugador == null) {
-                terminada = true;
-                gano = false;
-                r.setBatallaTerminada(true);
-                r.setJugadorGano(false);
-            } else {
-                jugador.getEquipo().setActivo(siguienteJugador.getNombre());
-                r.setCambioForzado(true);
-            }
-        }
-
-        actualizarEstadisticasYTurno();
-    }
-
-
-
+    /** Deja la batalla como al inicio: equipos curados y contadores en cero. */
     public void reiniciar() {
-        curarEquipoCompleto(jugador.getEquipo());
-        curarEquipoCompleto(rival.getEquipo());
+        curarEquipo(jugador.getEquipo());
+        curarEquipo(rival.getEquipo());
 
-        jugador.getEquipo().setActivo(jugador.getEquipo().obtener(0).getNombre());
-        rival.getEquipo().setActivo(rival.getEquipo().obtener(0).getNombre());
+        activarPrimero(jugador.getEquipo());
+        activarPrimero(rival.getEquipo());
 
         historial.vaciar();
         estadisticas.reiniciar();
@@ -263,22 +174,98 @@ public class MotorBatalla {
         gano = false;
     }
 
+    // -------------------------------------------------------------- COMBATE
 
-    private void curarEquipoCompleto(ListaPokemon equipo) {
+    /**
+     * Formula clasica simplificada. Si el tipo no afecta, el danio es 0;
+     * en cualquier otro caso siempre entra al menos 1 punto.
+     */
+    public int calcularDanio(Pokemon atacante, Pokemon defensor, Ataque ataque) {
+        double multiplicador = TablaTipos.multiplicador(ataque.getTipo(), defensor.getTipo());
+        if (multiplicador == 0) return 0;
+
+        double base = ((2.0 * atacante.getNivel() / 5.0 + 2) * ataque.getPotencia()
+                * atacante.getAtaque() / defensor.getDefensa()) / 50.0 + 2;
+        double variacion = 0.85 + azar.nextDouble() * 0.15;
+        return Math.max(1, (int) (base * multiplicador * variacion));
+    }
+
+    /** Aplica un ataque, registra las lineas y suma las estadisticas. */
+    private void golpear(ResultadoTurno r, Pokemon atacante, Pokemon defensor,
+                         Ataque ataque, boolean esDelJugador) {
+        int danio = defensor.recibirDanio(calcularDanio(atacante, defensor, ataque));
+
+        registrar(r, atacante.getNombre() + " utilizo " + ataque.getNombre() + ".");
+        String efecto = TablaTipos.mensajeEfectividad(
+                TablaTipos.multiplicador(ataque.getTipo(), defensor.getTipo()));
+        if (!efecto.isEmpty()) registrar(r, efecto);
+        registrar(r, defensor.getNombre() + " recibio " + danio + " puntos de danio.");
+        registrar(r, defensor.getNombre() + ": " + defensor.getEstadoHp() + " HP");
+
+        if (esDelJugador) estadisticas.sumarDanioInfligido(danio);
+        else estadisticas.sumarDanioRecibido(danio);
+    }
+
+    /** Respuesta automatica del rival; cierra el turno. */
+    private void turnoDelRival(ResultadoTurno r) {
+        Pokemon atacante = rival.getEquipo().getActivo();
+        Pokemon defensor = jugador.getEquipo().getActivo();
+        Ataque ataque = ataqueAlAzar(atacante);
+
+        if (atacante == null || defensor == null || ataque == null) {
+            cerrarTurno();
+            return;
+        }
+
+        golpear(r, atacante, defensor, ataque, false);
+
+        if (defensor.estaDerrotado()) {
+            estadisticas.sumarPropioDerrotado();
+            registrar(r, defensor.getNombre() + " fue derrotado.");
+
+            Pokemon siguiente = jugador.getEquipo().siguienteDisponible();
+            if (siguiente == null) {
+                terminar(r, false);
+                return;
+            }
+            jugador.getEquipo().setActivo(siguiente.getNombre());
+            registrar(r, "Adelante, " + siguiente.getNombre() + "!");
+            r.setCambioForzado(true);
+        }
+
+        cerrarTurno();
+    }
+
+    private Ataque ataqueAlAzar(Pokemon p) {
+        if (p == null || p.getAtaques().contar() == 0) return null;
+        return p.getAtaques().obtener(azar.nextInt(p.getAtaques().contar()));
+    }
+
+    private void terminar(ResultadoTurno r, boolean ganoJugador) {
+        terminada = true;
+        gano = ganoJugador;
+        r.setBatallaTerminada(true);
+        r.setJugadorGano(ganoJugador);
+        registrar(r, ganoJugador
+                ? "Ganaste la batalla!"
+                : "Te quedaste sin Pokemon disponibles. Perdiste...");
+        estadisticas.sumarTurno();
+    }
+
+    private void cerrarTurno() {
+        estadisticas.sumarTurno();
+        turno++;
+    }
+
+    private void curarEquipo(ListaPokemon equipo) {
         for (int i = 0; i < equipo.contar(); i++) {
             Pokemon p = equipo.obtener(i);
-            if (p.estaDerrotado()) {
-                p.revivir(p.getHpMax());
-            } else {
-                p.curar(p.getHpMax()); // curar() ya limita a hpMax, asi que esto lo deja full
-            }
+            if (p.estaDerrotado()) p.revivir(p.getHpMax());
+            else p.curar(p.getHpMax());
         }
     }
 
-    private void curarEquipoCompleto(ListaPokemon equipo) {
-        for (int i = 0; i < equipo.contar(); i++) {
-            Pokemon p = equipo.obtener(i);
-            p.curar(); // o revivir() + setHp(getHpMax()), segun tu clase Pokemon
-        }
+    private void activarPrimero(ListaPokemon equipo) {
+        if (equipo.contar() > 0) equipo.setActivo(equipo.obtener(0).getNombre());
     }
 }

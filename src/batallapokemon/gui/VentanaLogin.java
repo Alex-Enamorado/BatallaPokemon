@@ -21,11 +21,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 /**
- * ===========================================================================
- *  CARRIL DEV 4  -  LOGIN
- * ===========================================================================
- * Primera ventana del juego: log in, crear usuario o jugar con un usuario
- * aleatorio del roster de 10.
+ * Primera ventana del juego: iniciar sesion, crear usuario o jugar con un
+ * usuario aleatorio del roster de 10.
  */
 public class VentanaLogin extends JFrame {
 

@@ -61,8 +61,6 @@ public class ListaEnlazada<T> {
 
     public int contar() { return tamano; }
 
-    public boolean estaVacia() { return cabeza == null; }
-
     public void vaciar() {
         cabeza = null;
         tamano = 0;

@@ -16,9 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 /**
- * ===========================================================================
- *  CARRIL DEV 3  -  VENTANA DE OBJETOS
- * ===========================================================================
+ * Ventana OBJETOS.
+ *
  * Muestra el inventario (ListaEnlazada<Objeto>) con un radio por objeto.
  * Al elegir "UTILIZAR" abre DialogoCambiar para elegir el Pokemon destino
  * (si el objeto revive, ahi tambien se pueden elegir derrotados).

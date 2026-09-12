@@ -1,6 +1,5 @@
 out/
 *.class
-.idea/
 .vscode/
 *.iml
 .DS_Store
@@ -8,3 +7,12 @@ out/
 # Cache de JSON de PokeAPI: ~420 KB por Pokemon y se regenera sola.
 # El modo offline lo garantizan ProveedorLocal + los sprites de datos/sprites/.
 datos/pokemon/
+datos/usuarios.txt.bak
+
+# De IntelliJ se versiona solo lo que hace falta para que el proyecto abra y
+# compile en cualquier maquina: el modulo (source root) y las configuraciones
+# de ejecucion. misc.xml queda afuera porque guarda el nombre del JDK local.
+.idea/*
+!.idea/modules.xml
+!.idea/BatallaPokemon.iml
+!.idea/runConfigurations/

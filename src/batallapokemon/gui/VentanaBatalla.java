@@ -21,13 +21,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 /**
- * ===========================================================================
- *  CARRIL DEV 3  -  VENTANA PRINCIPAL DE BATALLA
- * ===========================================================================
- * Estructura ya armada: tarjeta del rival arriba, tarjeta del jugador abajo,
- * barra de botones y panel de historial.
- *
- * Falta (TODO Dev 3): conectar los botones con el MotorBatalla y refrescar.
+ * Ventana principal: tarjeta del rival arriba, la del jugador abajo, la barra
+ * de botones y el panel de historial. Toda accion pasa por el MotorBatalla y
+ * vuelve como ResultadoTurno, que se vuelca con mostrar().
  */
 public class VentanaBatalla extends JFrame {
 
@@ -191,6 +187,13 @@ public class VentanaBatalla extends JFrame {
         historial.setCaretPosition(historial.getDocument().getLength());
         refrescar();
 
+        if (r.fueCambioForzado() && !r.batallaTerminada()) {
+            Pokemon entra = motor.getJugador().getEquipo().getActivo();
+            JOptionPane.showMessageDialog(this,
+                    "Tu Pokemon fue derrotado.\nEntra " + entra.getNombre() + "!",
+                    "Cambio forzado", JOptionPane.INFORMATION_MESSAGE);
+        }
+
         if (r.batallaTerminada()) {
             String mensaje = r.jugadorGano() ? "GANASTE LA BATALLA!" : "PERDISTE LA BATALLA...";
             int opcion = JOptionPane.showConfirmDialog(this,
@@ -205,8 +208,6 @@ public class VentanaBatalla extends JFrame {
             }
         }
     }
-
-    // ------------------------------------------------------- TODO  DEV 3
 
     /** Muestra los ataques del Pokemon activo y ataca con el elegido. */
     private void alAtacar() {
@@ -228,7 +229,7 @@ public class VentanaBatalla extends JFrame {
         }
     }
 
-    /** TODO: abrir DialogoCambiar y, si devuelve un nombre, motor.cambiarPokemon(). */
+    /** Abre la seleccion de Pokemon y cambia al elegido. */
     private void alCambiar() {
         DialogoCambiar d = new DialogoCambiar(this, motor.getJugador().getEquipo());
         d.setVisible(true);
@@ -236,7 +237,7 @@ public class VentanaBatalla extends JFrame {
         if (elegido != null) mostrar(motor.cambiarPokemon(elegido));
     }
 
-    /** TODO: abrir DialogoObjetos y aplicar motor.usarObjeto(objeto, destino). */
+    /** Abre el inventario y aplica el objeto al Pokemon elegido. */
     private void alUsarObjeto() {
         DialogoObjetos d = new DialogoObjetos(this, motor.getJugador());
         d.setVisible(true);
@@ -245,7 +246,7 @@ public class VentanaBatalla extends JFrame {
         }
     }
 
-    /** TODO: mostrar el equipo completo + "Pokemon disponibles: N". */
+    /** Estado de todo el equipo, en modo solo lectura. */
     private void alVerEquipo() {
         VentanaEquipo v = new VentanaEquipo(motor.getJugador(), null, true);
         v.setVisible(true);

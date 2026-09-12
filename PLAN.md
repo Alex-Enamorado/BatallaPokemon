@@ -170,11 +170,11 @@ offline lo garantizan `ProveedorLocal` (16 Pokémon) + esos sprites.
 | # | Qué | Quién | Estado |
 |---|---|---|---|
 | **M0** | Repo + `PLAN.md` + esqueleto que **compila** + sprites de respaldo + `.gitignore`. Se sube el link. | Todos | ☑ |
-| **M1** | `ListaPokemon` + modelos + `ProveedorLocal` con 15 Pokémon → **desbloquea a Dev 3 y 4** | Dev 1 | ☐ |
-| **M2** | Ventana de batalla con sprites y barras de HP + `MotorBatalla.atacar()` funcionando de punta a punta | Dev 2 + Dev 3 | ☐ |
-| **M3** | Login/usuarios, `VentanaEquipo`, PokeAPI en vivo ✅ Dev 4 · faltan los diálogos de Dev 3 | Dev 3 + Dev 4 | ◐ |
-| **M4** | Extra: mover al primer lugar · reiniciar partida · estadísticas · victoria/derrota | Dev 1 + Dev 2 | ☐ |
-| **M5** | Día de integración: todos prueban juntos, caché commiteada, README con capturas | Todos | ☐ |
+| **M1** | `ListaPokemon` + modelos + `ProveedorLocal` con 16 Pokémon | Dev 1 | ☑ |
+| **M2** | Ventana de batalla con sprites y barras de HP + `MotorBatalla.atacar()` de punta a punta | Dev 2 + Dev 3 | ☑ |
+| **M3** | Login/usuarios, `VentanaEquipo`, PokeAPI en vivo, diálogos CAMBIAR / OBJETOS / MI EQUIPO / HISTORIAL | Dev 3 + Dev 4 | ☑ |
+| **M4** | Extra: mover al primer lugar · reiniciar partida · estadísticas · victoria/derrota | Dev 1 + Dev 2 | ☑ |
+| **M5** | Día de integración: harness en 101/101, README al día. Faltan las capturas. | Todos | ◐ |
 
 ---
 
@@ -188,10 +188,15 @@ offline lo garantizan `ProveedorLocal` (16 Pokémon) + esos sprites.
 
 ## 8. Checklist de la consigna
 
-**Listas:** insertar ☐ buscar ☐ eliminar ☐ recorrer ☐ contar ☐ activo ☐ siguiente disponible ☐ modificar ☐ mover al primer lugar ☐
-**Usuario:** crear ☐ login ☐ 10 usuarios aleatorios con equipo ☐
-**Equipo:** consultar ☐ agregar ☐ buscar ☐ eliminar ☐ cantidad disponibles ☐
-**Combate:** atacar ☐ recibir daño ☐ calcular daño ☐ ventajas de tipo ☐ detectar derrota ☐ cambiar ☐ continuar con el siguiente ☐
-**Inventario:** consultar ☐ usar ☐ actualizar (lista enlazada propia) ☐
-**Sistema:** historial ☐ estadísticas ☐ victoria ☐ derrota ☐ reiniciar ☐
-**GUI:** todo por ventanas, sprites visibles, nada de consola ☐
+**Listas:** insertar ☑ buscar ☑ eliminar ☑ recorrer ☑ contar ☑ activo ☑ siguiente disponible ☑ modificar ☑ mover al primer lugar ☑
+**Usuario:** crear ☑ login ☑ 10 usuarios aleatorios con equipo ☑
+**Equipo:** consultar ☑ agregar ☑ buscar ☑ eliminar ☑ cantidad disponibles ☑
+**Combate:** atacar ☑ recibir daño ☑ calcular daño ☑ ventajas de tipo ☑ detectar derrota ☑ cambiar ☑ continuar con el siguiente ☑
+**Inventario:** consultar ☑ usar ☑ actualizar (lista enlazada propia) ☑
+**Sistema:** historial ☑ estadísticas ☑ victoria ☑ derrota ☑ reiniciar ☑
+**GUI:** todo por ventanas, sprites visibles, nada de consola ☑
+
+Donde se demuestra cada operación de la lista: las 9 son alcanzables desde la GUI —
+`insertar`/`buscar`/`eliminar`/`modificar`/`moverAlPrimerLugar` desde MI EQUIPO,
+`getActivo`/`contar`/`contarDisponibles`/`recorrer` en las tarjetas y el encabezado, y
+`siguienteDisponible` cuando cae el Pokémon activo en combate.

@@ -1,9 +1,8 @@
 package batallapokemon.datos;
 
 /**
- * ===========================================================================
- *  CARRIL DEV 4  -  LECTOR DE JSON MINIMO
- * ===========================================================================
+ * Lector de JSON minimo.
+ *
  * No usamos Gson/Jackson: solo necesitamos 5 campos del JSON de PokeAPI,
  * asi que alcanza con indexOf/substring. Cero dependencias externas.
  *

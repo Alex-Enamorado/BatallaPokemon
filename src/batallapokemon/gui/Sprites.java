@@ -3,7 +3,6 @@ package batallapokemon.gui;
 import batallapokemon.datos.CacheArchivos;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -21,18 +20,6 @@ public class Sprites {
     public static ImageIcon cargar(String ruta) {
         if (!CacheArchivos.existe(ruta)) return null;
         return new ImageIcon(ruta);
-    }
-
-    /**
-     * Escala una imagen ESTATICA (png). Ojo: no usar con gif animados,
-     * getScaledInstance() les rompe la animacion.
-     */
-    public static ImageIcon cargarEscalado(String ruta, int ancho, int alto) {
-        ImageIcon icono = cargar(ruta);
-        if (icono == null) return null;
-        if (ruta.toLowerCase().endsWith(".gif")) return icono;
-        Image img = icono.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
-        return new ImageIcon(img);
     }
 
     /** JLabel con el sprite, o con el nombre en texto si no hay imagen. */
