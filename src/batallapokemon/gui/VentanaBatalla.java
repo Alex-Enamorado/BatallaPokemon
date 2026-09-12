@@ -196,15 +196,24 @@ public class VentanaBatalla extends JFrame {
 
     // ------------------------------------------------------- TODO  DEV 3
 
-    /**
-     * TODO: dejar que el usuario elija cual de los ataques del Pokemon activo
-     * usar (los ataques estan en activo.getAtaques(), se recorren con
-     * contar()/obtener(i)) y despues llamar a mostrar(motor.atacar(indice)).
-     * Se puede hacer con un JOptionPane.showOptionDialog y un String[] de
-     * nombres, o con un dialogo propio.
-     */
+    /** Muestra los ataques del Pokemon activo y ataca con el elegido. */
     private void alAtacar() {
-        mostrar(motor.atacar(0));
+        Pokemon activo = motor.getJugador().getEquipo().getActivo();
+        if (activo == null) return;
+
+        int cantidad = activo.getAtaques().contar();
+        String[] nombres = new String[cantidad];
+        for (int i = 0; i < cantidad; i++) {
+            nombres[i] = activo.getAtaques().obtener(i).toString();
+        }
+
+        int elegido = JOptionPane.showOptionDialog(this, "Elegi un ataque:", "ATACAR",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, nombres, nombres[0]);
+
+        if (elegido >= 0) {
+            mostrar(motor.atacar(elegido));
+        }
     }
 
     /** TODO: abrir DialogoCambiar y, si devuelve un nombre, motor.cambiarPokemon(). */
