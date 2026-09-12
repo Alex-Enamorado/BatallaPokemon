@@ -22,6 +22,15 @@ public class DialogoCambiar extends JDialog {
     private String seleccionado;
 
     public DialogoCambiar(Frame padre, ListaPokemon equipo) {
+        this(padre, equipo, false);
+    }
+
+    /**
+     * @param permitirDerrotados si es true, tambien se pueden elegir Pokemon
+     *                           derrotados (lo usa DialogoObjetos para elegir
+     *                           el destino de un objeto que revive).
+     */
+    public DialogoCambiar(Frame padre, ListaPokemon equipo, boolean permitirDerrotados) {
         super(padre, "SELECCIONAR POKEMON", true);
         setSize(600, 420);
         setLocationRelativeTo(padre);
@@ -37,7 +46,7 @@ public class DialogoCambiar extends JDialog {
         // Se recorre el equipo SOLO con metodos publicos: nunca con NodoPokemon.
         for (int i = 0; i < equipo.contar(); i++) {
             Pokemon p = equipo.obtener(i);
-            PanelFilaPokemon fila = new PanelFilaPokemon(p, true);
+            PanelFilaPokemon fila = new PanelFilaPokemon(p, true, permitirDerrotados);
             grupo.add(fila.getBotonSeleccion());
             paneles[i] = fila;
             filas.add(fila);

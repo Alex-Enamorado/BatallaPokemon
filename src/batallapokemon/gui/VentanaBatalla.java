@@ -190,21 +190,42 @@ public class VentanaBatalla extends JFrame {
         historial.append(r.texto());
         historial.setCaretPosition(historial.getDocument().getLength());
         refrescar();
-        // TODO Dev 3: si r.batallaTerminada() -> dialogo de victoria/derrota
-        // con opcion de reiniciar (motor.reiniciar() + historial.setText("")).
+
+        if (r.batallaTerminada()) {
+            String mensaje = r.jugadorGano() ? "GANASTE LA BATALLA!" : "PERDISTE LA BATALLA...";
+            int opcion = JOptionPane.showConfirmDialog(this,
+                    mensaje + "\n\n¿Queres jugar de nuevo?", "FIN DE LA BATALLA",
+                    JOptionPane.YES_NO_OPTION);
+            if (opcion == JOptionPane.YES_OPTION) {
+                motor.reiniciar();
+                historial.setText("");
+                refrescar();
+            } else {
+                dispose();
+            }
+        }
     }
 
     // ------------------------------------------------------- TODO  DEV 3
 
-    /**
-     * TODO: dejar que el usuario elija cual de los ataques del Pokemon activo
-     * usar (los ataques estan en activo.getAtaques(), se recorren con
-     * contar()/obtener(i)) y despues llamar a mostrar(motor.atacar(indice)).
-     * Se puede hacer con un JOptionPane.showOptionDialog y un String[] de
-     * nombres, o con un dialogo propio.
-     */
+    /** Muestra los ataques del Pokemon activo y ataca con el elegido. */
     private void alAtacar() {
-        mostrar(motor.atacar(0));
+        Pokemon activo = motor.getJugador().getEquipo().getActivo();
+        if (activo == null) return;
+
+        int cantidad = activo.getAtaques().contar();
+        String[] nombres = new String[cantidad];
+        for (int i = 0; i < cantidad; i++) {
+            nombres[i] = activo.getAtaques().obtener(i).toString();
+        }
+
+        int elegido = JOptionPane.showOptionDialog(this, "Elegi un ataque:", "ATACAR",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, nombres, nombres[0]);
+
+        if (elegido >= 0) {
+            mostrar(motor.atacar(elegido));
+        }
     }
 
     /** TODO: abrir DialogoCambiar y, si devuelve un nombre, motor.cambiarPokemon(). */
