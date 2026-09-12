@@ -16,16 +16,13 @@ import java.nio.file.Path;
 import java.util.Random;
 
 /**
- * ===========================================================================
- *  CARRIL DEV 4  -  USUARIOS
- * ===========================================================================
  * Carga y persiste los usuarios en datos/usuarios.txt
  * Formato de cada linea:  usuario;password;pokemon1,pokemon2,pokemon3,pokemon4
  * Las lineas vacias y las que empiezan con '#' se ignoran.
  *
- * El proveedor que se le pasa deberia ser ProveedorLocal: el roster de 10
- * usuarios usa Pokemon que ya existen offline, asi que el arranque del juego
- * es instantaneo y no dispara 40 pedidos HTTP.
+ * El proveedor que se le pasa deberia ser el ProveedorCompuesto de Main: los
+ * Pokemon del roster salen del local (instantaneos) y los que el usuario
+ * agrego desde PokeAPI se reconstruyen desde la cache.
  */
 public class GestorUsuarios {
 
@@ -131,7 +128,8 @@ public class GestorUsuarios {
         new File("datos").mkdirs();
         try (PrintWriter escritor = new PrintWriter(ARCHIVO, StandardCharsets.UTF_8)) {
             escritor.println("# formato: usuario;password;pokemon1,pokemon2,pokemon3,pokemon4");
-            escritor.println("# archivo generado por GestorUsuarios.guardar()");
+            escritor.println("# Roster para el boton \"usuario aleatorio\".");
+            escritor.println("# Lo reescribe GestorUsuarios.guardar(); se puede editar a mano.");
             for (int i = 0; i < usuarios.contar(); i++) {
                 Usuario u = usuarios.obtener(i);
                 escritor.println(u.getNombre() + ";" + u.getPassword() + ";"

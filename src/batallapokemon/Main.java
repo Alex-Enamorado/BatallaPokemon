@@ -1,6 +1,7 @@
 package batallapokemon;
 
 import batallapokemon.datos.CacheArchivos;
+import batallapokemon.datos.ProveedorCompuesto;
 import batallapokemon.datos.ProveedorLocal;
 import batallapokemon.datos.ProveedorPokeApi;
 import batallapokemon.datos.ProveedorPokemon;
@@ -12,9 +13,9 @@ import javax.swing.UIManager;
 /**
  * Punto de entrada del juego.
  *
- * IntelliJ: Run > Edit Configurations > Working directory debe ser la raiz
- * del repo ($PROJECT_DIR$, que es el valor por defecto), porque las rutas de
- * datos/ son relativas.
+ * En IntelliJ el "Working directory" de la configuracion de ejecucion tiene
+ * que ser la raiz del repo ($PROJECT_DIR$), porque las rutas de datos/ son
+ * relativas.
  */
 public class Main {
 
@@ -24,21 +25,19 @@ public class Main {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
-            // si falla, se usa el look and feel por defecto: no es critico
+            // si falla, se usa el look and feel por defecto
         }
 
-        // El roster de datos/usuarios.txt usa Pokemon que ya estan offline:
-        // con ProveedorLocal el arranque es instantaneo (si usaramos la API
-        // serian 40 pedidos HTTP antes de ver la primera ventana).
-        ProveedorPokemon local = new ProveedorLocal();
-        GestorUsuarios gestor = new GestorUsuarios(local);
+        // Local primero (los 16 offline, instantaneos), PokeAPI despues para
+        // cualquier otro nombre. ProveedorPokeApi ya cae solo en el local si
+        // no hay internet.
+        ProveedorPokemon proveedor = new ProveedorCompuesto(
+                new ProveedorLocal(), new ProveedorPokeApi());
+
+        GestorUsuarios gestor = new GestorUsuarios(proveedor);
         gestor.cargar();
 
-        // Para AGREGAR Pokemon al equipo si vale la pena ir a PokeAPI:
-        // trae cualquiera de los 1300, y cae solo en ProveedorLocal sin internet.
-        ProveedorPokemon api = new ProveedorPokeApi();
-
         SwingUtilities.invokeLater(() ->
-            new VentanaLogin(gestor, api).setVisible(true));
+            new VentanaLogin(gestor, proveedor).setVisible(true));
     }
 }

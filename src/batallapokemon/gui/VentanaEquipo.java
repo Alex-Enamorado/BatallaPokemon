@@ -19,15 +19,12 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
 
 /**
- * ===========================================================================
- *  CARRIL DEV 4  -  MI EQUIPO (gestion)
- * ===========================================================================
- * En modo soloLectura solo muestra el estado (es la vista del boton MI EQUIPO
- * durante la batalla). En modo gestion habilita Agregar / Buscar / Eliminar /
- * Mover al primer lugar.
+ * Ventana MI EQUIPO.
  *
- * REGLA: todo se hace con los metodos publicos de ListaPokemon.
- * Prohibido importar NodoPokemon aca.
+ * En modo soloLectura solo muestra el estado (es lo que abre el boton MI EQUIPO
+ * durante la batalla); en modo gestion habilita Agregar / Buscar / Eliminar /
+ * Mover al primer lugar. Todo se hace con los metodos publicos de
+ * ListaPokemon: aca no se importa NodoPokemon.
  */
 public class VentanaEquipo extends JFrame {
 
@@ -77,14 +74,17 @@ public class VentanaEquipo extends JFrame {
             JButton agregar  = new JButton("Agregar");
             JButton buscar   = new JButton("Buscar");
             JButton eliminar = new JButton("Eliminar");
-            JButton mover    = new JButton("Mover al 1er lugar");
+            JButton modificar = new JButton("Modificar");
+            JButton mover     = new JButton("Mover al 1°");
             agregar.addActionListener(e -> alAgregar());
             buscar.addActionListener(e -> alBuscar());
             eliminar.addActionListener(e -> alEliminar());
+            modificar.addActionListener(e -> alModificar());
             mover.addActionListener(e -> alMover());
             p.add(agregar);
             p.add(buscar);
             p.add(eliminar);
+            p.add(modificar);
             p.add(mover);
         }
         JButton cerrar = new JButton("Cerrar");
@@ -114,6 +114,17 @@ public class VentanaEquipo extends JFrame {
     /** Los cambios del equipo se reflejan en datos/usuarios.txt. */
     private void persistir() {
         if (gestor != null) gestor.guardar();
+    }
+
+    /** Los que el proveedor garantiza incluso sin internet. */
+    private String sugerencias() {
+        String[] nombres = proveedor.nombresDisponibles();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < nombres.length; i++) {
+            sb.append(nombres[i]);
+            if (i < nombres.length - 1) sb.append((i + 1) % 6 == 0 ? ",\n" : ", ");
+        }
+        return sb.toString();
     }
 
     /** Nombres actuales, para mostrarlos en los dialogos de entrada. */
@@ -158,7 +169,8 @@ public class VentanaEquipo extends JFrame {
         }
 
         String nombre = pedirNombre("Agregar Pokemon",
-                "Nombre del Pokemon (en ingles, como en PokeAPI):");
+                "Nombre del Pokemon (en ingles, como en PokeAPI).\n"
+                + "Sin internet solo andan estos:\n" + sugerencias());
         if (nombre == null) return;
 
         if (equipo.buscar(nombre) != null) {
@@ -244,6 +256,44 @@ public class VentanaEquipo extends JFrame {
                     "Eliminar", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        persistir();
+        refrescar();
+    }
+
+    // ------------------------------------------------------------ MODIFICAR
+
+    /** Cambia el nivel de un Pokemon del equipo (tipo y hpMax quedan igual). */
+    private void alModificar() {
+        String nombre = pedirNombre("Modificar Pokemon", "Nombre del Pokemon a modificar:");
+        if (nombre == null) return;
+
+        Pokemon p = entrenador.getEquipo().buscar(nombre);
+        if (p == null) {
+            JOptionPane.showMessageDialog(this, "\"" + nombre + "\" no esta en el equipo.",
+                    "Modificar", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String texto = JOptionPane.showInputDialog(this,
+                "Nuevo nivel para " + p.getNombre() + " (1-100):",
+                String.valueOf(p.getNivel()));
+        if (texto == null) return;
+
+        int nivel;
+        try {
+            nivel = Integer.parseInt(texto.trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Eso no es un numero.",
+                    "Modificar", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (nivel < 1 || nivel > 100) {
+            JOptionPane.showMessageDialog(this, "El nivel tiene que estar entre 1 y 100.",
+                    "Modificar", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        entrenador.getEquipo().modificar(p.getNombre(), nivel, p.getHpMax(), p.getTipo());
         persistir();
         refrescar();
     }

@@ -14,9 +14,8 @@ import java.nio.file.Path;
 import java.time.Duration;
 
 /**
- * ===========================================================================
- *  CARRIL DEV 4  -  POKEAPI
- * ===========================================================================
+ * Proveedor que trae los Pokemon de PokeAPI.
+ *
  * Estrategia (para que el demo en clase nunca se rompa):
  *   1. Si ya existe datos/pokemon/<nombre>.json -> se usa el de la cache.
  *   2. Si no, se pide a la API y SE GUARDA en la cache.
