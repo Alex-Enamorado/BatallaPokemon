@@ -78,11 +78,11 @@ public class ListaPokemon {
     }
 
     public boolean estaVacia() { return cabeza == null; }
-    
+
     public Pokemon buscar(String nombre) {
         NodoPokemon actual = cabeza;
         while(actual != null){
-            if(acutal.getPokemon().getNombre().equalsIgnoreCase(nombre)){
+            if(actual.getPokemon().getNombre().equalsIgnoreCase(nombre)){
                 return actual.getPokemon();
             }
             actual = actual.getSiguiente();
@@ -97,17 +97,49 @@ public class ListaPokemon {
      * Acordarse de decrementar 'tamano'.
      */
     public boolean eliminar(String nombre) {
+        if(cabeza == null) return false;
+        if(cabeza.getPokemon().getNombre().equalsIgnoreCase(nombre)){
+            NodoPokemon eliminado = cabeza;
+            cabeza = cabeza.getSiguiente();
+            tamano--;
+            if(activo == eliminado){
+                activo = cabeza;
+            }
+            return true;
+        }
+        NodoPokemon anterior = cabeza;
+        NodoPokemon actual = cabeza.getSiguiente();
+        while(actual != null){
+            if(actual.getPokemon().getNombre().equalsIgnoreCase(nombre)){
+                anterior.setSiguiente(actual.getSiguiente());
+                tamano--;
+                if(activo == actual){
+                    actual = cabeza;
+                }
+                return true;
+            }
+            anterior = actual;
+            actual = actual.getSiguiente();
+        }
         return false;
     }
 
     /** TODO: contar los Pokemon con HP > 0 (recorrido + contador). */
     public int contarDisponibles() {
-        return 0;
+        int contador = 0;
+        NodoPokemon actual = cabeza;
+        while(actual != null){
+            if(!actual.getPokemon().estaDerrotado()){
+                contador++;
+            }
+            actual = actual.getSiguiente();
+        }
+        return contador;
     }
 
     /** TODO: devolver el Pokemon del nodo 'activo' (o null si no hay). */
     public Pokemon getActivo() {
-        return null;
+        return (activo != null) ? activo.getPokemon() : null;
     }
 
     /**
@@ -117,6 +149,17 @@ public class ListaPokemon {
      * un Pokemon derrotado.
      */
     public boolean setActivo(String nombre) {
+        NodoPokemon actual = cabeza;
+        while(actual != null){
+            if(actual.getPokemon().getNombre().equalsIgnoreCase(nombre)){
+                if(actual.getPokemon().estaDerrotado()){
+                    return false;
+                }
+                activo = actual;
+                return true;
+            }
+            actual = actual.getSiguiente();
+        }
         return false;
     }
 
