@@ -3,23 +3,7 @@ package batallapokemon.estructuras;
 import batallapokemon.modelo.Pokemon;
 import batallapokemon.modelo.Tipo;
 
-/**
- * ===========================================================================
- *  CARRIL DEV 1  -  NUCLEO DEL PROYECTO
- * ===========================================================================
- * Lista enlazada simple del equipo de un entrenador.
- *
- * Reglas:
- *  - Nadie fuera de este paquete ve un NodoPokemon (encapsulamiento).
- *  - Cuando un Pokemon es derrotado el nodo NO se elimina: solo cambia
- *    el puntero 'activo'.
- *
- * Lo que ya esta implementado (plomeria basica, igual que ListaEnlazada):
- *    insertar, contar, obtener, recorrer
- * Lo que falta implementar (TODO Dev 1):
- *    buscar, eliminar, contarDisponibles, getActivo, setActivo,
- *    siguienteDisponible, modificar, todosDerrotados, moverAlPrimerLugar
- */
+
 public class ListaPokemon {
     private NodoPokemon cabeza;
     private NodoPokemon activo;
