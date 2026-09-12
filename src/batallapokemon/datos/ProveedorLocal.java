@@ -52,8 +52,8 @@ public class ProveedorLocal implements ProveedorPokemon {
                           int baseHp, int ataque, int defensa) {
         int hpMax = baseHp + nivel * 2 + 15;
         Pokemon p = new Pokemon(nombre, id, nivel, tipo, hpMax, ataque, defensa);
-        p.setSpriteFrente(CacheArchivos.rutaSpriteFrente(id));
-        p.setSpriteEspalda(CacheArchivos.rutaSpriteEspalda(id));
+        p.setSpriteFrente(CacheArchivos.spriteFrente(id));
+        p.setSpriteEspalda(CacheArchivos.spriteEspalda(id));
         agregarAtaques(p, tipo);
         return p;
     }

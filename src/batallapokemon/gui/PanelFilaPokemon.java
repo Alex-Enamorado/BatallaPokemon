@@ -25,6 +25,15 @@ public class PanelFilaPokemon extends JPanel {
     private JRadioButton seleccion;
 
     public PanelFilaPokemon(Pokemon pokemon, boolean seleccionable) {
+        this(pokemon, seleccionable, false);
+    }
+
+    /**
+     * @param permitirDerrotados si es true, se puede seleccionar un Pokemon
+     *                           derrotado (lo usa DialogoObjetos para elegir
+     *                           destino de un objeto que revive).
+     */
+    public PanelFilaPokemon(Pokemon pokemon, boolean seleccionable, boolean permitirDerrotados) {
         this.pokemon = pokemon;
         setLayout(new BorderLayout(8, 0));
         setBorder(BorderFactory.createCompoundBorder(
@@ -34,8 +43,8 @@ public class PanelFilaPokemon extends JPanel {
 
         if (seleccionable) {
             seleccion = new JRadioButton();
-            // No se puede elegir un Pokemon derrotado (requisito de la consigna)
-            seleccion.setEnabled(!pokemon.estaDerrotado());
+            // No se puede elegir un Pokemon derrotado, salvo que se permita explicitamente
+            seleccion.setEnabled(permitirDerrotados || !pokemon.estaDerrotado());
             add(seleccion, BorderLayout.WEST);
         }
 

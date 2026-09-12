@@ -9,6 +9,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -27,8 +29,8 @@ import javax.swing.JTextField;
  */
 public class VentanaLogin extends JFrame {
 
-    private GestorUsuarios gestor;
-    private ProveedorPokemon proveedor;
+    private final GestorUsuarios gestor;
+    private final ProveedorPokemon proveedor;
 
     private JTextField campoUsuario;
     private JPasswordField campoPassword;
@@ -39,7 +41,7 @@ public class VentanaLogin extends JFrame {
 
         setTitle("POKEMON BATTLE - Acceso");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(430, 300);
+        setSize(430, 320);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(8, 8));
 
@@ -71,30 +73,21 @@ public class VentanaLogin extends JFrame {
         botones.add(crear);
         botones.add(aleatorio);
         add(botones, BorderLayout.SOUTH);
+
+        // Enter en cualquiera de los dos campos inicia sesion.
+        campoUsuario.addActionListener(e -> alIniciarSesion());
+        campoPassword.addActionListener(e -> alIniciarSesion());
     }
 
     private String usuario()  { return campoUsuario.getText().trim(); }
     private String password() { return new String(campoPassword.getPassword()); }
 
-    /**
-     * Abre la gestion de equipo y despues la batalla.
-     * TODO Dev 4: si el equipo esta vacio, forzar a pasar por VentanaEquipo
-     * antes de dejar empezar la batalla.
-     */
-    private void empezar(Usuario u) {
-        Entrenador rival = gestor.generarRival(u);
-        if (rival == null) {
-            JOptionPane.showMessageDialog(this,
-                "TODO Dev 4: generarRival() todavia no esta implementado.");
+    private void alIniciarSesion() {
+        if (usuario().isEmpty() || password().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Completa usuario y password.",
+                    "Faltan datos", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        MotorBatalla motor = new MotorBatalla(u.getEntrenador(), rival);
-        new VentanaBatalla(motor).setVisible(true);
-        dispose();
-    }
-
-    /** TODO: gestor.login(usuario(), password()); si es null, avisar. */
-    private void alIniciarSesion() {
         Usuario u = gestor.login(usuario(), password());
         if (u == null) {
             JOptionPane.showMessageDialog(this, "Usuario o password incorrectos.",
@@ -104,29 +97,73 @@ public class VentanaLogin extends JFrame {
         empezar(u);
     }
 
-    /**
-     * TODO: validar que los campos no esten vacios, gestor.crear(...) y
-     * si devuelve null avisar "ese usuario ya existe". Despues abrir
-     * VentanaEquipo (modo gestion) para que arme su equipo.
-     */
     private void alCrearUsuario() {
-        Usuario u = gestor.crear(usuario(), password());
-        if (u == null) {
-            JOptionPane.showMessageDialog(this,
-                "No se pudo crear (ya existe o falta implementar crear()).");
+        if (usuario().isEmpty() || password().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Completa usuario y password.",
+                    "Faltan datos", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        new VentanaEquipo(u.getEntrenador(), proveedor, false).setVisible(true);
+        Usuario nuevo = gestor.crear(usuario(), password());
+        if (nuevo == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Ese usuario ya existe (o el nombre tiene ';' o ',').",
+                    "No se pudo crear", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        JOptionPane.showMessageDialog(this,
+                "Usuario creado. Arma tu equipo y despues cerra esa ventana\n"
+                + "para empezar la batalla.",
+                "Bienvenido " + nuevo.getNombre(), JOptionPane.INFORMATION_MESSAGE);
+        abrirGestionEquipo(nuevo);
     }
 
-    /** TODO: gestor.usuarioAleatorio() y empezar(u). */
     private void alUsuarioAleatorio() {
         Usuario u = gestor.usuarioAleatorio();
         if (u == null) {
             JOptionPane.showMessageDialog(this,
-                "TODO Dev 4: cargar datos/usuarios.txt en GestorUsuarios.cargar()");
+                    "No hay usuarios cargados. Falta el archivo "
+                    + GestorUsuarios.ARCHIVO + "\n"
+                    + "(o la configuracion de ejecucion no apunta a la raiz del proyecto).",
+                    "Roster vacio", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        campoUsuario.setText(u.getNombre());
         empezar(u);
+    }
+
+    /** Ventana de gestion; al cerrarla, si ya hay equipo, arranca la batalla. */
+    private void abrirGestionEquipo(Usuario u) {
+        VentanaEquipo ventana = new VentanaEquipo(u.getEntrenador(), proveedor, false);
+        ventana.setGestor(gestor);
+        ventana.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                if (u.getEntrenador().getEquipo().contar() > 0) empezar(u);
+            }
+        });
+        ventana.setVisible(true);
+    }
+
+    /** Arranca la batalla. Si el equipo esta vacio, manda a armarlo primero. */
+    private void empezar(Usuario u) {
+        if (u.getEntrenador().getEquipo().contar() == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Tu equipo esta vacio. Agrega al menos un Pokemon.",
+                    "Equipo vacio", JOptionPane.WARNING_MESSAGE);
+            abrirGestionEquipo(u);
+            return;
+        }
+
+        Entrenador rival = gestor.generarRival(u);
+        if (rival == null || rival.getEquipo().contar() == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "No se pudo armar el equipo rival.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        MotorBatalla motor = new MotorBatalla(u.getEntrenador(), rival);
+        new VentanaBatalla(motor).setVisible(true);
+        dispose();
     }
 }
