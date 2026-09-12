@@ -18,7 +18,6 @@ public class Entrenador {
     public ListaPokemon getEquipo() { return equipo; }
     public ListaEnlazada<Objeto> getInventario() { return inventario; }
 
-    /** Inventario inicial estandar de la consigna. */
     public void cargarInventarioInicial() {
         inventario.insertar(new Objeto("Pocion",      "Recupera 20 HP",    20, false, 3));
         inventario.insertar(new Objeto("Superpocion", "Recupera 50 HP",    50, false, 2));

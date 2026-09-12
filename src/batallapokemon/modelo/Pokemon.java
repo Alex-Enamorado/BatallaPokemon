@@ -2,10 +2,6 @@ package batallapokemon.modelo;
 
 import batallapokemon.estructuras.ListaEnlazada;
 
-/**
- * Criatura del juego. Los sprites se guardan como RUTA a un archivo local
- * (datos/sprites/...), nunca como URL: la GUI solo hace new ImageIcon(ruta).
- */
 public class Pokemon {
     private String nombre;
     private int idApi;
@@ -56,7 +52,6 @@ public class Pokemon {
 
     public void agregarAtaque(Ataque a) { ataques.insertar(a); }
 
-    /** Aplica danio sin bajar de 0. Devuelve el danio realmente aplicado. */
     public int recibirDanio(int danio) {
         if (danio < 0) danio = 0;
         int antes = hpActual;
@@ -65,7 +60,6 @@ public class Pokemon {
         return antes - hpActual;
     }
 
-    /** Cura sin pasar de hpMax. Devuelve el HP realmente recuperado. */
     public int curar(int cantidad) {
         if (estaDerrotado()) return 0;
         int antes = hpActual;
@@ -74,7 +68,6 @@ public class Pokemon {
         return hpActual - antes;
     }
 
-    /** Revive a un Pokemon derrotado. Devuelve false si no estaba derrotado. */
     public boolean revivir(int hp) {
         if (!estaDerrotado()) return false;
         hpActual = Math.min(hp, hpMax);

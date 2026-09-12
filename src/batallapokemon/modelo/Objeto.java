@@ -1,9 +1,5 @@
 package batallapokemon.modelo;
 
-/**
- * Objeto del inventario. Si revive == true, se usa sobre un Pokemon derrotado
- * y lo deja con 'curacion' puntos de HP; si no, cura a un Pokemon con vida.
- */
 public class Objeto {
     private String nombre;
     private String descripcion;

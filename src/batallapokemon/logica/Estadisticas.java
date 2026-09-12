@@ -1,6 +1,5 @@
 package batallapokemon.logica;
 
-/** Contadores de la batalla, para la ventana de estadisticas. */
 public class Estadisticas {
     private int turnos;
     private int danioInfligido;
@@ -31,7 +30,6 @@ public class Estadisticas {
     public int getRivalesDerrotados() { return rivalesDerrotados; }
     public int getPropiosDerrotados() { return propiosDerrotados; }
 
-    /** Resumen listo para mostrar en la GUI. */
     public String resumen() {
         return "Turnos jugados: " + turnos
              + "\nDanio infligido: " + danioInfligido

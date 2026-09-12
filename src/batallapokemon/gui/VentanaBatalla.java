@@ -20,13 +20,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-/**
- * Ventana principal: tarjeta del rival arriba, la del jugador abajo, la barra
- * de botones y el panel de historial. Toda accion pasa por el MotorBatalla y
- * vuelve como ResultadoTurno, que se vuelca con mostrar().
- */
 public class VentanaBatalla extends JFrame {
-
     private MotorBatalla motor;
 
     private JPanel tarjetaRival;
@@ -123,7 +117,6 @@ public class VentanaBatalla extends JFrame {
         return inferior;
     }
 
-    /** Tarjeta con sprite + nombre/nivel/tipo/HP de un Pokemon. */
     private JPanel construirTarjeta(Pokemon p, boolean esRival) {
         JPanel tarjeta = new JPanel(new BorderLayout(10, 0));
         tarjeta.setBorder(BorderFactory.createCompoundBorder(
@@ -136,7 +129,6 @@ public class VentanaBatalla extends JFrame {
             return tarjeta;
         }
 
-        // Al rival se le ve el sprite de frente; al propio, el de espalda.
         String ruta = esRival ? p.getSpriteFrente() : p.getSpriteEspalda();
         JLabel sprite = Sprites.etiquetaSprite(ruta, p.getNombre());
         sprite.setPreferredSize(new Dimension(110, 110));
@@ -165,7 +157,6 @@ public class VentanaBatalla extends JFrame {
         return tarjeta;
     }
 
-    /** Redibuja las dos tarjetas y el numero de turno. Llamar tras cada accion. */
     public void refrescar() {
         tarjetaRival.removeAll();
         tarjetaRival.add(construirTarjeta(motor.getRival().getEquipo().getActivo(), true));
@@ -176,7 +167,6 @@ public class VentanaBatalla extends JFrame {
         repaint();
     }
 
-    /** Volca las lineas del resultado al panel de historial. */
     private void mostrar(ResultadoTurno r) {
         if (r.accionInvalida()) {
             JOptionPane.showMessageDialog(this, r.getMensajeError(),
@@ -209,7 +199,6 @@ public class VentanaBatalla extends JFrame {
         }
     }
 
-    /** Muestra los ataques del Pokemon activo y ataca con el elegido. */
     private void alAtacar() {
         Pokemon activo = motor.getJugador().getEquipo().getActivo();
         if (activo == null) return;
@@ -229,7 +218,6 @@ public class VentanaBatalla extends JFrame {
         }
     }
 
-    /** Abre la seleccion de Pokemon y cambia al elegido. */
     private void alCambiar() {
         DialogoCambiar d = new DialogoCambiar(this, motor.getJugador().getEquipo());
         d.setVisible(true);
@@ -237,7 +225,6 @@ public class VentanaBatalla extends JFrame {
         if (elegido != null) mostrar(motor.cambiarPokemon(elegido));
     }
 
-    /** Abre el inventario y aplica el objeto al Pokemon elegido. */
     private void alUsarObjeto() {
         DialogoObjetos d = new DialogoObjetos(this, motor.getJugador());
         d.setVisible(true);
@@ -246,7 +233,6 @@ public class VentanaBatalla extends JFrame {
         }
     }
 
-    /** Estado de todo el equipo, en modo solo lectura. */
     private void alVerEquipo() {
         VentanaEquipo v = new VentanaEquipo(motor.getJugador(), null, true);
         v.setVisible(true);

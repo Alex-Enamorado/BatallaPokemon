@@ -1,9 +1,5 @@
 package batallapokemon.modelo;
 
-/**
- * Tipos elementales. El orden importa: TablaTipos usa ordinal() como indice
- * de la matriz de multiplicadores. No reordenar sin avisar a Dev 2.
- */
 public enum Tipo {
     NORMAL("Normal"), FUEGO("Fuego"), AGUA("Agua"), PLANTA("Planta"),
     ELECTRICO("Electrico"), HIELO("Hielo"), LUCHA("Lucha"), VENENO("Veneno"),
@@ -17,7 +13,6 @@ public enum Tipo {
 
     public String getEtiqueta() { return etiqueta; }
 
-    /** Convierte el nombre en ingles que devuelve PokeAPI ("fire") al enum. */
     public static Tipo desdeApi(String nombreIngles) {
         if (nombreIngles == null) return NORMAL;
         switch (nombreIngles.toLowerCase()) {

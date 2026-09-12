@@ -12,15 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 
-/**
- * Una fila reutilizable: [sprite] Nombre  Nv.15  [====HP====]  Tipo  (DERROTADO)
- * La usan MI EQUIPO, SELECCIONAR POKEMON y la ventana de gestion del equipo.
- *
- * IMPORTANTE: no se usa JTable ni JList porque internamente dependen de
- * Vector / DefaultListModel, prohibidos por la consigna.
- */
 public class PanelFilaPokemon extends JPanel {
-
     private Pokemon pokemon;
     private JRadioButton seleccion;
 
@@ -28,11 +20,6 @@ public class PanelFilaPokemon extends JPanel {
         this(pokemon, seleccionable, false);
     }
 
-    /**
-     * @param permitirDerrotados si es true, se puede seleccionar un Pokemon
-     *                           derrotado (lo usa DialogoObjetos para elegir
-     *                           destino de un objeto que revive).
-     */
     public PanelFilaPokemon(Pokemon pokemon, boolean seleccionable, boolean permitirDerrotados) {
         this.pokemon = pokemon;
         setLayout(new BorderLayout(8, 0));
@@ -43,7 +30,7 @@ public class PanelFilaPokemon extends JPanel {
 
         if (seleccionable) {
             seleccion = new JRadioButton();
-            // No se puede elegir un Pokemon derrotado, salvo que se permita explicitamente
+
             seleccion.setEnabled(permitirDerrotados || !pokemon.estaDerrotado());
             add(seleccion, BorderLayout.WEST);
         }

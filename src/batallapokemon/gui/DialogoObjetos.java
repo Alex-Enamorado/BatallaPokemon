@@ -15,15 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-/**
- * Ventana OBJETOS.
- *
- * Muestra el inventario (ListaEnlazada<Objeto>) con un radio por objeto.
- * Al elegir "UTILIZAR" abre DialogoCambiar para elegir el Pokemon destino
- * (si el objeto revive, ahi tambien se pueden elegir derrotados).
- */
 public class DialogoObjetos extends JDialog {
-
     private String objetoElegido;
     private String destinoElegido;
 
@@ -63,7 +55,7 @@ public class DialogoObjetos extends JDialog {
             for (int i = 0; i < radios.length; i++) {
                 if (radios[i].isSelected()) {
                     Objeto o = objetos[i];
-                    // Si el objeto revive, tambien se pueden elegir Pokemon derrotados.
+
                     DialogoCambiar destino = new DialogoCambiar(padre, entrenador.getEquipo(), o.esRevivir());
                     destino.setVisible(true);
                     if (destino.getSeleccionado() != null) {

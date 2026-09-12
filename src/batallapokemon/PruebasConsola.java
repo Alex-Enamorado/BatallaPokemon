@@ -20,16 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
-/**
- * Pruebas de consola del proyecto: estructuras, datos/usuarios y motor de
- * batalla. Es una herramienta de DESARROLLO, no parte del juego (el juego se
- * juega 100% por GUI, como pide la consigna).
- *
- * Hace una copia de seguridad de datos/usuarios.txt y la restaura al final,
- * asi las pruebas no ensucian el roster.
- */
 public class PruebasConsola {
-
     private static int ok = 0, fallo = 0;
     private static final Path ARCHIVO = Path.of(GestorUsuarios.ARCHIVO);
     private static final Path RESPALDO = Path.of(GestorUsuarios.ARCHIVO + ".bak");
@@ -52,8 +43,6 @@ public class PruebasConsola {
         System.out.println("\n================================");
         System.out.println("OK: " + ok + "   FALLARON: " + fallo);
     }
-
-    // -------------------------------------------------------- ESTRUCTURAS
 
     private static void probarListaPokemon() {
         titulo("ListaPokemon");
@@ -98,7 +87,6 @@ public class PruebasConsola {
         verificar("mover el que ya es primero devuelve true",
                 equipo.moverAlPrimerLugar("bulbasaur"));
 
-        // El activo es Charizard; al eliminarlo el activo tiene que reapuntar
         verificar("eliminar el Pokemon activo", equipo.eliminar("charizard"));
         verificar("el activo dejo de ser un nodo suelto",
                 equipo.getActivo() != null
@@ -111,11 +99,9 @@ public class PruebasConsola {
         System.out.println("       lista final: " + equipo.recorrer());
     }
 
-    // ------------------------------------------------------------ JsonMini
-
     private static void probarJsonMini() {
         titulo("JsonMini");
-        // Recorte con la misma forma que devuelve PokeAPI.
+
         String json = "{\"height\":4,\"id\":25,\"name\":\"pikachu\","
             + "\"moves\":[{\"move\":{\"name\":\"mega-punch\",\"url\":\"x\"},"
             + "\"version_group_details\":[{\"level_learned_at\":0,"
@@ -141,8 +127,6 @@ public class PruebasConsola {
         verificar("clave inexistente devuelve -1", JsonMini.numero(json, "nada", 0) == -1);
         verificar("json null no explota", JsonMini.texto(null, "name", 0) == null);
     }
-
-    // ------------------------------------------------------ GestorUsuarios
 
     private static void probarGestorUsuarios() {
         titulo("GestorUsuarios");
@@ -192,13 +176,10 @@ public class PruebasConsola {
                 rival != null && rival.getInventario().contar() == 3);
     }
 
-    // -------------------------------------------------------- MotorBatalla
-
     private static void probarMotorBatalla() {
         titulo("MotorBatalla");
         ProveedorPokemon prov = new ProveedorLocal();
 
-        // --- un turno completo
         MotorBatalla motor = armarBatalla(prov, new String[]{"pikachu", "charizard"},
                                                 new String[]{"onix", "gengar"});
         Pokemon miPika = motor.getJugador().getEquipo().getActivo();
@@ -208,7 +189,7 @@ public class PruebasConsola {
 
         ResultadoTurno r = motor.atacar(0);
         verificar("atacar() no invalida un turno normal", !r.accionInvalida());
-        // Regresion: el ataque del jugador tiene que pegarle al RIVAL
+
         verificar("el ataque le baja HP al rival", suOnix.getHpActual() < hpRivalAntes);
         verificar("el rival contraataca y baja HP al jugador",
                 miPika.getHpActual() < hpMioAntes);
@@ -221,7 +202,6 @@ public class PruebasConsola {
         verificar("estadisticas: danio infligido > 0", est.getDanioInfligido() > 0);
         verificar("estadisticas: danio recibido > 0", est.getDanioRecibido() > 0);
 
-        // --- cambios
         verificar("cambiar al que ya esta activo es invalido",
                 motor.cambiarPokemon(miPika.getNombre()).accionInvalida());
         ResultadoTurno cambio = motor.cambiarPokemon("charizard");
@@ -230,7 +210,6 @@ public class PruebasConsola {
                 motor.getJugador().getEquipo().getActivo().getNombre().equals("Charizard"));
         verificar("estadisticas: 1 cambio", motor.getEstadisticas().getCambiosRealizados() == 1);
 
-        // --- objetos
         Pokemon activo = motor.getJugador().getEquipo().getActivo();
         activo.recibirDanio(30);
         int antesDeCurar = activo.getHpActual();
@@ -243,9 +222,6 @@ public class PruebasConsola {
         verificar("usar un objeto inexistente es invalido",
                 motor.usarObjeto("Masterball", activo.getNombre()).accionInvalida());
 
-        // --- el rival cae y entra el siguiente
-        // Machamp (Lucha) contra Onix (Roca) es x2; ojo con elegir Fantasma
-        // como rival, porque Lucha no lo afecta y el danio seria 0.
         MotorBatalla m2 = armarBatalla(prov, new String[]{"machamp"},
                                              new String[]{"onix", "gengar"});
         Pokemon onix = m2.getRival().getEquipo().getActivo();
@@ -258,7 +234,6 @@ public class PruebasConsola {
         verificar("el nodo del derrotado sigue en la lista",
                 m2.getRival().getEquipo().contar() == 2);
 
-        // --- victoria
         MotorBatalla m3 = armarBatalla(prov, new String[]{"machamp"}, new String[]{"onix"});
         Pokemon ultimo = m3.getRival().getEquipo().getActivo();
         ultimo.recibirDanio(ultimo.getHpMax() - 1);
@@ -267,7 +242,6 @@ public class PruebasConsola {
         verificar("batallaTerminada() queda en true", m3.batallaTerminada());
         verificar("atacar despues de terminar es invalido", m3.atacar(0).accionInvalida());
 
-        // --- derrota
         MotorBatalla m4 = armarBatalla(prov, new String[]{"pikachu"},
                                              new String[]{"onix", "machamp"});
         Pokemon miUltimo = m4.getJugador().getEquipo().getActivo();
@@ -278,7 +252,6 @@ public class PruebasConsola {
         verificar("estadisticas: 1 propio derrotado",
                 m4.getEstadisticas().getPropiosDerrotados() == 1);
 
-        // --- reiniciar
         m4.reiniciar();
         verificar("reiniciar(): equipo curado",
                 m4.getJugador().getEquipo().contarDisponibles()
@@ -289,7 +262,6 @@ public class PruebasConsola {
         verificar("reiniciar(): estadisticas en cero",
                 m4.getEstadisticas().getTurnos() == 0);
 
-        // --- tipos
         Pokemon terrestre = new Pokemon("Prueba", 0, 20, Tipo.TIERRA, 100, 50, 50);
         Pokemon atacante = prov.obtener("pikachu");
         Ataque electrico = new Ataque("Rayo", Tipo.ELECTRICO, 90);
@@ -300,7 +272,6 @@ public class PruebasConsola {
                 motor.calcularDanio(atacante, terrestre, normal) > 0);
     }
 
-    /** Dos entrenadores con equipos e inventario, listos para pelear. */
     private static MotorBatalla armarBatalla(ProveedorPokemon prov,
                                              String[] equipoJugador, String[] equipoRival) {
         Entrenador jugador = new Entrenador("Jugador");
@@ -314,13 +285,10 @@ public class PruebasConsola {
         return new MotorBatalla(jugador, rival);
     }
 
-    // ------------------------------------------------------------- PokeAPI
-
     private static void probarPokeApi() {
         titulo("ProveedorPokeApi");
         ProveedorPokeApi api = new ProveedorPokeApi();
 
-        // Pokemon que NO esta en ProveedorLocal: si aparece, vino de la API.
         Pokemon mewtwo = api.obtener("mewtwo");
         boolean hayRed = mewtwo != null && mewtwo.getIdApi() == 150;
 
