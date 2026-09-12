@@ -1,3 +1,4 @@
+Integrantes - Oscar Canahuati, Alex Enamorado, Leandro Sandoval y Marcelo Garcia
 # Batalla Pokémon
 
 Simulador de batalla por turnos entre dos entrenadores Pokémon, con GUI en Swing
