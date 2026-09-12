@@ -1,6 +1,5 @@
 # formato: usuario;password;pokemon1,pokemon2,pokemon3,pokemon4
-# Roster de 10 usuarios para el boton "Usuario aleatorio".
-# Los nombres de Pokemon deben existir en ProveedorLocal.nombresDisponibles()
+# archivo generado por GestorUsuarios.guardar()
 ash;pikachu123;pikachu,charizard,bulbasaur,squirtle
 misty;agua123;blastoise,gyarados,lapras,squirtle
 brock;roca123;onix,machamp,snorlax,pidgeot
@@ -11,3 +10,4 @@ erika;planta123;venusaur,bulbasaur,lapras,alakazam
 sabrina;psi123;alakazam,gengar,pidgeot,snorlax
 lance;dragon123;dragonite,gyarados,charizard,arcanine
 giovanni;tierra123;onix,machamp,arcanine,gengar
+oscar;12345678;gengar,pikachu
