@@ -2,13 +2,7 @@ package batallapokemon.logica;
 
 import batallapokemon.modelo.Tipo;
 
-/**
- * Ventajas y desventajas de tipo.
- * Se usa una matriz double[18][18] indexada por Tipo.ordinal().
- * Los arreglos SI estan permitidos por la consigna (no son java.util).
- */
 public class TablaTipos {
-
     private static final int N = Tipo.values().length;
     private static final double[][] TABLA = new double[N][N];
 
@@ -67,13 +61,11 @@ public class TablaTipos {
         for (Tipo d : defensores) TABLA[atacante.ordinal()][d.ordinal()] = mult;
     }
 
-    /** Multiplicador de danio: 2.0, 1.0, 0.5 o 0.0. */
     public static double multiplicador(Tipo atacante, Tipo defensor) {
         if (atacante == null || defensor == null) return 1.0;
         return TABLA[atacante.ordinal()][defensor.ordinal()];
     }
 
-    /** Mensaje para el historial segun la efectividad. */
     public static String mensajeEfectividad(double mult) {
         if (mult == 0.0) return "No afecta al objetivo.";
         if (mult >= 2.0) return "Es super efectivo!";

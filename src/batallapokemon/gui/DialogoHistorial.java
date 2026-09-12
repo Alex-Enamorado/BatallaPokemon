@@ -13,9 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-/** HISTORIAL DE BATALLA + estadisticas. */
 public class DialogoHistorial extends JDialog {
-
     public DialogoHistorial(Frame padre, MotorBatalla motor) {
         super(padre, "HISTORIAL DE BATALLA", true);
         setSize(520, 480);

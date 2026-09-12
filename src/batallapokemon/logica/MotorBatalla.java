@@ -9,16 +9,7 @@ import batallapokemon.modelo.Pokemon;
 import batallapokemon.modelo.Registro;
 import java.util.Random;
 
-/**
- * Motor de combate por turnos.
- *
- * Un turno completo = accion del jugador (atacar, cambiar u objeto) seguida
- * del ataque automatico del rival. No importa nada de javax.swing: cada
- * accion devuelve un ResultadoTurno con las lineas ya redactadas y la GUI
- * solo las muestra.
- */
 public class MotorBatalla {
-
     private final Entrenador jugador;
     private final Entrenador rival;
     private final ListaEnlazada<Registro> historial;
@@ -45,15 +36,11 @@ public class MotorBatalla {
     public boolean batallaTerminada() { return terminada; }
     public boolean jugadorGano() { return gano; }
 
-    /** Agrega la linea al resultado y al historial de una sola vez. */
     private void registrar(ResultadoTurno r, String linea) {
         r.agregarLinea(linea);
         historial.insertar(new Registro(turno, linea));
     }
 
-    // ------------------------------------------------------------- ACCIONES
-
-    /** Ataque del jugador con el ataque en esa posicion, y respuesta del rival. */
     public ResultadoTurno atacar(int indiceAtaque) {
         ResultadoTurno r = new ResultadoTurno();
         if (terminada) {
@@ -93,7 +80,6 @@ public class MotorBatalla {
         return r;
     }
 
-    /** Cambia el Pokemon activo del jugador. Cambiar consume el turno. */
     public ResultadoTurno cambiarPokemon(String nombre) {
         ResultadoTurno r = new ResultadoTurno();
         if (terminada) {
@@ -117,7 +103,6 @@ public class MotorBatalla {
         return r;
     }
 
-    /** Usa un objeto sobre un Pokemon del equipo. Tambien consume el turno. */
     public ResultadoTurno usarObjeto(String nombreObjeto, String nombrePokemonDestino) {
         ResultadoTurno r = new ResultadoTurno();
         if (terminada) {
@@ -159,7 +144,6 @@ public class MotorBatalla {
         return r;
     }
 
-    /** Deja la batalla como al inicio: equipos curados y contadores en cero. */
     public void reiniciar() {
         curarEquipo(jugador.getEquipo());
         curarEquipo(rival.getEquipo());
@@ -174,12 +158,6 @@ public class MotorBatalla {
         gano = false;
     }
 
-    // -------------------------------------------------------------- COMBATE
-
-    /**
-     * Formula clasica simplificada. Si el tipo no afecta, el danio es 0;
-     * en cualquier otro caso siempre entra al menos 1 punto.
-     */
     public int calcularDanio(Pokemon atacante, Pokemon defensor, Ataque ataque) {
         double multiplicador = TablaTipos.multiplicador(ataque.getTipo(), defensor.getTipo());
         if (multiplicador == 0) return 0;
@@ -190,7 +168,6 @@ public class MotorBatalla {
         return Math.max(1, (int) (base * multiplicador * variacion));
     }
 
-    /** Aplica un ataque, registra las lineas y suma las estadisticas. */
     private void golpear(ResultadoTurno r, Pokemon atacante, Pokemon defensor,
                          Ataque ataque, boolean esDelJugador) {
         int danio = defensor.recibirDanio(calcularDanio(atacante, defensor, ataque));
@@ -206,7 +183,6 @@ public class MotorBatalla {
         else estadisticas.sumarDanioRecibido(danio);
     }
 
-    /** Respuesta automatica del rival; cierra el turno. */
     private void turnoDelRival(ResultadoTurno r) {
         Pokemon atacante = rival.getEquipo().getActivo();
         Pokemon defensor = jugador.getEquipo().getActivo();

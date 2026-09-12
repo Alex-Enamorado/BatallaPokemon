@@ -1,6 +1,5 @@
 package batallapokemon.modelo;
 
-/** Una linea del historial de batalla. */
 public class Registro {
     private int turno;
     private String texto;

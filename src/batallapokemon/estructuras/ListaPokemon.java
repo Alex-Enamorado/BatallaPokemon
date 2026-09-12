@@ -3,13 +3,6 @@ package batallapokemon.estructuras;
 import batallapokemon.modelo.Pokemon;
 import batallapokemon.modelo.Tipo;
 
-/**
- * Lista enlazada simple del equipo de un entrenador.
- *
- * Nadie fuera de este paquete ve un NodoPokemon: la GUI recorre el equipo con
- * contar() + obtener(i). Cuando un Pokemon es derrotado el nodo NO se elimina,
- * solo cambia el puntero 'activo'.
- */
 public class ListaPokemon {
     private NodoPokemon cabeza;
     private NodoPokemon activo;
@@ -21,7 +14,6 @@ public class ListaPokemon {
         this.tamano = 0;
     }
 
-    /** Inserta al final. El primer Pokemon insertado queda como activo. */
     public void insertar(Pokemon p) {
         if (p == null) return;
         NodoPokemon nuevo = new NodoPokemon(p);
@@ -38,10 +30,8 @@ public class ListaPokemon {
         tamano++;
     }
 
-    /** Cantidad total de Pokemon del equipo (incluye derrotados). */
     public int contar() { return tamano; }
 
-    /** Acceso por indice para que la GUI pueda iterar sin ver los nodos. */
     public Pokemon obtener(int indice) {
         if (indice < 0 || indice >= tamano) return null;
         NodoPokemon actual = cabeza;
@@ -51,7 +41,6 @@ public class ListaPokemon {
         return actual.getPokemon();
     }
 
-    /** Recorre la lista: "Pikachu -> Charizard -> null". */
     public String recorrer() {
         StringBuilder sb = new StringBuilder();
         NodoPokemon actual = cabeza;
@@ -76,7 +65,6 @@ public class ListaPokemon {
         return null;
     }
 
-    /** Elimina el nodo por nombre. Si era el activo, el activo pasa a la cabeza. */
     public boolean eliminar(String nombre) {
         if(cabeza == null) return false;
         if(cabeza.getPokemon().getNombre().equalsIgnoreCase(nombre)){
@@ -103,7 +91,6 @@ public class ListaPokemon {
         return false;
     }
 
-    /** Cuantos Pokemon tienen HP > 0. */
     public int contarDisponibles() {
         int contador = 0;
         NodoPokemon actual = cabeza;
@@ -116,12 +103,10 @@ public class ListaPokemon {
         return contador;
     }
 
-    /** Pokemon que esta en combate, o null si el equipo esta vacio. */
     public Pokemon getActivo() {
         return (activo != null) ? activo.getPokemon() : null;
     }
 
-    /** Deja ese Pokemon en combate. Devuelve false si no existe o esta derrotado. */
     public boolean setActivo(String nombre) {
         NodoPokemon actual = cabeza;
         while(actual != null){
@@ -137,10 +122,6 @@ public class ListaPokemon {
         return false;
     }
 
-    /**
-     * Primer Pokemon con HP > 0 que no sea el activo, para continuar la
-     * batalla cuando el activo cae. null si no queda ninguno.
-     */
     public Pokemon siguienteDisponible() {
         NodoPokemon actual = cabeza;
         while (actual != null) {
@@ -153,7 +134,6 @@ public class ListaPokemon {
         return null;
     }
 
-    /** Actualiza nivel / hpMax / tipo de un Pokemon del equipo. */
     public boolean modificar(String nombre, int nivel, int hpMax, Tipo tipo) {
         Pokemon p = buscar(nombre);
         if (p == null) return false;
@@ -163,7 +143,6 @@ public class ListaPokemon {
         return true;
     }
 
-    /** true si todo el equipo esta derrotado. */
     public boolean todosDerrotados() {
         if (cabeza == null) return false;
         NodoPokemon actual = cabeza;
@@ -176,12 +155,6 @@ public class ListaPokemon {
         return true;
     }
 
-    /**
-     * Reto adicional: mueve ese Pokemon al primer lugar reenlazando nodos,
-     * sin usar ninguna otra estructura de datos.
-     *   Antes:   Pikachu -> Charizard -> Bulbasaur
-     *   Despues: Bulbasaur -> Pikachu -> Charizard
-     */
     public boolean moverAlPrimerLugar(String nombre) {
         if (cabeza == null) return false;
         if (cabeza.getPokemon().getNombre().equalsIgnoreCase(nombre)) {

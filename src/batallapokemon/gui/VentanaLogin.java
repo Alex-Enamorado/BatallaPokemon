@@ -20,12 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-/**
- * Primera ventana del juego: iniciar sesion, crear usuario o jugar con un
- * usuario aleatorio del roster de 10.
- */
 public class VentanaLogin extends JFrame {
-
     private final GestorUsuarios gestor;
     private final ProveedorPokemon proveedor;
 
@@ -71,7 +66,6 @@ public class VentanaLogin extends JFrame {
         botones.add(aleatorio);
         add(botones, BorderLayout.SOUTH);
 
-        // Enter en cualquiera de los dos campos inicia sesion.
         campoUsuario.addActionListener(e -> alIniciarSesion());
         campoPassword.addActionListener(e -> alIniciarSesion());
     }
@@ -128,7 +122,6 @@ public class VentanaLogin extends JFrame {
         empezar(u);
     }
 
-    /** Ventana de gestion; al cerrarla, si ya hay equipo, arranca la batalla. */
     private void abrirGestionEquipo(Usuario u) {
         VentanaEquipo ventana = new VentanaEquipo(u.getEntrenador(), proveedor, false);
         ventana.setGestor(gestor);
@@ -141,7 +134,6 @@ public class VentanaLogin extends JFrame {
         ventana.setVisible(true);
     }
 
-    /** Arranca la batalla. Si el equipo esta vacio, manda a armarlo primero. */
     private void empezar(Usuario u) {
         if (u.getEntrenador().getEquipo().contar() == 0) {
             JOptionPane.showMessageDialog(this,

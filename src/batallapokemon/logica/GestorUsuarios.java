@@ -15,17 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Random;
 
-/**
- * Carga y persiste los usuarios en datos/usuarios.txt
- * Formato de cada linea:  usuario;password;pokemon1,pokemon2,pokemon3,pokemon4
- * Las lineas vacias y las que empiezan con '#' se ignoran.
- *
- * El proveedor que se le pasa deberia ser el ProveedorCompuesto de Main: los
- * Pokemon del roster salen del local (instantaneos) y los que el usuario
- * agrego desde PokeAPI se reconstruyen desde la cache.
- */
 public class GestorUsuarios {
-
     public static final String ARCHIVO = "datos/usuarios.txt";
     public static final int MAX_EQUIPO = 6;
 
@@ -41,7 +31,6 @@ public class GestorUsuarios {
 
     public ListaEnlazada<Usuario> getUsuarios() { return usuarios; }
 
-    /** Lee el archivo. Si no existe, la lista queda vacia (sin explotar). */
     public void cargar() {
         usuarios.vaciar();
         File archivo = new File(ARCHIVO);
@@ -58,12 +47,9 @@ public class GestorUsuarios {
                 if (u != null) usuarios.insertar(u);
             }
         } catch (IOException e) {
-            // Archivo ilegible: se arranca sin roster. El boton "usuario
-            // aleatorio" va a avisar que no hay usuarios cargados.
         }
     }
 
-    /** "ash;pikachu123;pikachu,charizard" -> Usuario con su equipo armado. */
     private Usuario interpretarLinea(String linea) {
         String[] partes = linea.split(";");
         if (partes.length < 2) return null;
@@ -85,7 +71,6 @@ public class GestorUsuarios {
         return new Usuario(nombre, password, entrenador);
     }
 
-    /** Busca el usuario y valida la password. Devuelve null si no coincide. */
     public Usuario login(String nombre, String password) {
         if (nombre == null || password == null) return null;
         Usuario u = buscarUsuario(nombre);
@@ -93,7 +78,6 @@ public class GestorUsuarios {
         return u.passwordCorrecta(password) ? u : null;
     }
 
-    /** Busqueda por nombre, sin distinguir mayusculas. */
     public Usuario buscarUsuario(String nombre) {
         if (nombre == null) return null;
         String buscado = nombre.trim();
@@ -104,15 +88,11 @@ public class GestorUsuarios {
         return null;
     }
 
-    /**
-     * Crea un usuario con equipo vacio (lo arma desde la VentanaEquipo).
-     * Devuelve null si el nombre ya existe o si falta algun dato.
-     */
     public Usuario crear(String nombre, String password) {
         if (nombre == null || password == null) return null;
         String limpio = nombre.trim();
         if (limpio.isEmpty() || password.isEmpty()) return null;
-        if (limpio.contains(";") || limpio.contains(",")) return null;  // romperia el archivo
+        if (limpio.contains(";") || limpio.contains(",")) return null;
         if (buscarUsuario(limpio) != null) return null;
 
         Entrenador entrenador = new Entrenador(limpio);
@@ -123,7 +103,6 @@ public class GestorUsuarios {
         return nuevo;
     }
 
-    /** Reescribe el archivo completo desde la lista. */
     public void guardar() {
         new File("datos").mkdirs();
         try (PrintWriter escritor = new PrintWriter(ARCHIVO, StandardCharsets.UTF_8)) {
@@ -136,11 +115,9 @@ public class GestorUsuarios {
                                + nombresDelEquipo(u.getEntrenador().getEquipo()));
             }
         } catch (IOException e) {
-            // no se pudo persistir: la partida en memoria sigue funcionando
         }
     }
 
-    /** "pikachu,charizard,bulbasaur" a partir del equipo. */
     private String nombresDelEquipo(ListaPokemon equipo) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < equipo.contar(); i++) {
@@ -150,18 +127,11 @@ public class GestorUsuarios {
         return sb.toString();
     }
 
-    /** Un usuario al azar del roster, o null si no hay ninguno cargado. */
     public Usuario usuarioAleatorio() {
         if (usuarios.contar() == 0) return null;
         return usuarios.obtener(azar.nextInt(usuarios.contar()));
     }
 
-    /**
-     * Entrenador rival para la maquina: se elige otro usuario del roster y se
-     * le copia el equipo pidiendo INSTANCIAS NUEVAS al proveedor. Si se
-     * devolviera su Entrenador tal cual, el rival arrancaria con el danio de
-     * la partida anterior.
-     */
     public Entrenador generarRival(Usuario jugador) {
         Usuario elegido = elegirRival(jugador);
 
@@ -176,7 +146,6 @@ public class GestorUsuarios {
             }
         }
 
-        // Sin roster (o roster con equipos vacios): rival de emergencia.
         if (rival.getEquipo().contar() == 0) {
             String[] respaldo = { "gengar", "onix", "arcanine" };
             for (String nombre : respaldo) {
@@ -187,13 +156,12 @@ public class GestorUsuarios {
         return rival;
     }
 
-    /** Otro usuario distinto del jugador, con equipo no vacio. */
     private Usuario elegirRival(Usuario jugador) {
         int total = usuarios.contar();
         if (total == 0) return null;
 
         int inicio = azar.nextInt(total);
-        for (int k = 0; k < total; k++) {                 // recorrido circular
+        for (int k = 0; k < total; k++) {
             Usuario candidato = usuarios.obtener((inicio + k) % total);
             boolean esElJugador = jugador != null
                     && candidato.getNombre().equalsIgnoreCase(jugador.getNombre());

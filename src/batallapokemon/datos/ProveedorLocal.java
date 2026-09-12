@@ -4,14 +4,7 @@ import batallapokemon.modelo.Ataque;
 import batallapokemon.modelo.Pokemon;
 import batallapokemon.modelo.Tipo;
 
-/**
- * Proveedor OFFLINE: 16 Pokemon cargados a mano. Es el fallback cuando no hay
- * internet y tambien lo que usan Dev 3 y Dev 4 para trabajar sin depender de
- * la API. Cada llamada a obtener() devuelve una INSTANCIA NUEVA (dos
- * entrenadores no deben compartir el mismo objeto Pokemon).
- */
 public class ProveedorLocal implements ProveedorPokemon {
-
     private static final String[] NOMBRES = {
         "pikachu", "charizard", "bulbasaur", "squirtle", "gengar", "blastoise",
         "venusaur", "alakazam", "machamp", "onix", "gyarados", "snorlax",
@@ -47,7 +40,6 @@ public class ProveedorLocal implements ProveedorPokemon {
         }
     }
 
-    /** Arma el Pokemon: HP de combate, sprites de la cache y ataques por tipo. */
     private Pokemon crear(String nombre, int id, int nivel, Tipo tipo,
                           int baseHp, int ataque, int defensa) {
         int hpMax = baseHp + nivel * 2 + 15;
@@ -58,7 +50,6 @@ public class ProveedorLocal implements ProveedorPokemon {
         return p;
     }
 
-    /** Dos ataques del tipo del Pokemon + uno normal de respaldo. */
     private void agregarAtaques(Pokemon p, Tipo tipo) {
         switch (tipo) {
             case ELECTRICO:

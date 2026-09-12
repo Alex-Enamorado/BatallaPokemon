@@ -2,11 +2,6 @@ package batallapokemon.estructuras;
 
 import batallapokemon.modelo.Pokemon;
 
-/**
- * Nodo de la lista enlazada del equipo. Encapsula un Pokemon.
- * IMPORTANTE: esta clase NO debe ser usada desde el paquete gui.
- * Toda operacion sobre el equipo pasa por los metodos publicos de ListaPokemon.
- */
 public class NodoPokemon {
     private Pokemon pokemon;
     private NodoPokemon siguiente;

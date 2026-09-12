@@ -18,21 +18,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
 
-/**
- * Ventana MI EQUIPO.
- *
- * En modo soloLectura solo muestra el estado (es lo que abre el boton MI EQUIPO
- * durante la batalla); en modo gestion habilita Agregar / Buscar / Eliminar /
- * Mover al primer lugar. Todo se hace con los metodos publicos de
- * ListaPokemon: aca no se importa NodoPokemon.
- */
 public class VentanaEquipo extends JFrame {
-
     private final Entrenador entrenador;
     private final ProveedorPokemon proveedor;
     private final boolean soloLectura;
 
-    /** Opcional: si esta, cada cambio del equipo se persiste en usuarios.txt. */
     private GestorUsuarios gestor;
 
     private JPanel filas;
@@ -65,7 +55,6 @@ public class VentanaEquipo extends JFrame {
         refrescar();
     }
 
-    /** Si se le pasa el gestor, los cambios del equipo quedan guardados. */
     public void setGestor(GestorUsuarios gestor) { this.gestor = gestor; }
 
     private JPanel construirBotones() {
@@ -93,7 +82,6 @@ public class VentanaEquipo extends JFrame {
         return p;
     }
 
-    /** Redibuja la lista completa recorriendo el equipo por indice. */
     public void refrescar() {
         filas.removeAll();
         ListaPokemon equipo = entrenador.getEquipo();
@@ -111,12 +99,10 @@ public class VentanaEquipo extends JFrame {
         repaint();
     }
 
-    /** Los cambios del equipo se reflejan en datos/usuarios.txt. */
     private void persistir() {
         if (gestor != null) gestor.guardar();
     }
 
-    /** Los que el proveedor garantiza incluso sin internet. */
     private String sugerencias() {
         String[] nombres = proveedor.nombresDisponibles();
         StringBuilder sb = new StringBuilder();
@@ -127,7 +113,6 @@ public class VentanaEquipo extends JFrame {
         return sb.toString();
     }
 
-    /** Nombres actuales, para mostrarlos en los dialogos de entrada. */
     private String nombresActuales() {
         ListaPokemon equipo = entrenador.getEquipo();
         if (equipo.contar() == 0) return "(equipo vacio)";
@@ -148,13 +133,6 @@ public class VentanaEquipo extends JFrame {
         return respuesta.isEmpty() ? null : respuesta;
     }
 
-    // -------------------------------------------------------------- AGREGAR
-
-    /**
-     * Pide el nombre y lo trae del proveedor. La descarga puede tardar
-     * (PokeAPI), asi que va en un SwingWorker: si se llamara a
-     * proveedor.obtener() aca mismo, la ventana se congelaria.
-     */
     private void alAgregar() {
         if (proveedor == null) {
             JOptionPane.showMessageDialog(this, "No hay proveedor de Pokemon configurado.");
@@ -182,7 +160,7 @@ public class VentanaEquipo extends JFrame {
         new SwingWorker<Pokemon, Void>() {
             @Override
             protected Pokemon doInBackground() {
-                return proveedor.obtener(nombre);      // red + disco, fuera del hilo de Swing
+                return proveedor.obtener(nombre);
             }
 
             @Override
@@ -216,8 +194,6 @@ public class VentanaEquipo extends JFrame {
         }
     }
 
-    // --------------------------------------------------------------- BUSCAR
-
     private void alBuscar() {
         String nombre = pedirNombre("Buscar Pokemon", "Nombre a buscar en el equipo:");
         if (nombre == null) return;
@@ -239,8 +215,6 @@ public class VentanaEquipo extends JFrame {
                 "Encontrado", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    // ------------------------------------------------------------- ELIMINAR
-
     private void alEliminar() {
         String nombre = pedirNombre("Eliminar Pokemon", "Nombre del Pokemon a eliminar:");
         if (nombre == null) return;
@@ -260,9 +234,6 @@ public class VentanaEquipo extends JFrame {
         refrescar();
     }
 
-    // ------------------------------------------------------------ MODIFICAR
-
-    /** Cambia el nivel de un Pokemon del equipo (tipo y hpMax quedan igual). */
     private void alModificar() {
         String nombre = pedirNombre("Modificar Pokemon", "Nombre del Pokemon a modificar:");
         if (nombre == null) return;
@@ -298,9 +269,6 @@ public class VentanaEquipo extends JFrame {
         refrescar();
     }
 
-    // ---------------------------------------------------------------- MOVER
-
-    /** Reto adicional: el reenlazado lo hace ListaPokemon (carril Dev 1). */
     private void alMover() {
         String nombre = pedirNombre("Mover al primer lugar",
                 "Nombre del Pokemon que pasa a ser el primero:");

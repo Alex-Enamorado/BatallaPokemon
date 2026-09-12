@@ -1,6 +1,5 @@
 package batallapokemon.estructuras;
 
-/** Nodo generico. Se usa para objetos, historial, ataques y usuarios. */
 public class Nodo<T> {
     private T dato;
     private Nodo<T> siguiente;
