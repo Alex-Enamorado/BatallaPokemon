@@ -169,6 +169,14 @@ public class ListaPokemon {
      * cuando el activo es derrotado. Devuelve null si no queda ninguno.
      */
     public Pokemon siguienteDisponible() {
+        NodoPokemon actual = cabeza;
+        while (actual != null) {
+            boolean esElActivo = (actual == activo);
+            if (!actual.getPokemon().estaDerrotado() && !esElActivo) {
+                return actual.getPokemon();
+            }
+            actual = actual.getSiguiente();
+        }
         return null;
     }
 
@@ -177,12 +185,25 @@ public class ListaPokemon {
      * Usar los setters de Pokemon. Devolver false si no existe.
      */
     public boolean modificar(String nombre, int nivel, int hpMax, Tipo tipo) {
-        return false;
+        Pokemon p = buscar(nombre);
+        if (p == null) return false;
+        p.setNivel(nivel);
+        p.setHpMax(hpMax);
+        p.setTipo(tipo);
+        return true;
     }
 
     /** TODO: true si TODOS los Pokemon del equipo estan derrotados. */
     public boolean todosDerrotados() {
-        return false;
+        if (cabeza == null) return false;
+        NodoPokemon actual = cabeza;
+        while (actual != null) {
+            if (!actual.getPokemon().estaDerrotado()) {
+                return false;
+            }
+            actual = actual.getSiguiente();
+        }
+        return true;
     }
 
     /**
@@ -196,6 +217,22 @@ public class ListaPokemon {
      * Ojo: si ya es la cabeza, devolver true sin tocar nada.
      */
     public boolean moverAlPrimerLugar(String nombre) {
+        if (cabeza == null) return false;
+        if (cabeza.getPokemon().getNombre().equalsIgnoreCase(nombre)) {
+            return true;
+        }
+        NodoPokemon anterior = cabeza;
+        NodoPokemon actual = cabeza.getSiguiente();
+        while (actual != null) {
+            if (actual.getPokemon().getNombre().equalsIgnoreCase(nombre)) {
+                anterior.setSiguiente(actual.getSiguiente());
+                actual.setSiguiente(cabeza);
+                cabeza = actual;
+                return true;
+            }
+            anterior = actual;
+            actual = actual.getSiguiente();
+        }
         return false;
     }
 }
