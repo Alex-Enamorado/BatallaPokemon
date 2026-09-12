@@ -1,6 +1,7 @@
 package batallapokemon;
 
 import batallapokemon.datos.CacheArchivos;
+import batallapokemon.datos.ProveedorLocal;
 import batallapokemon.datos.ProveedorPokeApi;
 import batallapokemon.datos.ProveedorPokemon;
 import batallapokemon.gui.VentanaLogin;
@@ -26,13 +27,18 @@ public class Main {
             // si falla, se usa el look and feel por defecto: no es critico
         }
 
-        // ProveedorPokeApi cae solo en ProveedorLocal si no hay internet.
-        ProveedorPokemon proveedor = new ProveedorPokeApi();
-
-        GestorUsuarios gestor = new GestorUsuarios(proveedor);
+        // El roster de datos/usuarios.txt usa Pokemon que ya estan offline:
+        // con ProveedorLocal el arranque es instantaneo (si usaramos la API
+        // serian 40 pedidos HTTP antes de ver la primera ventana).
+        ProveedorPokemon local = new ProveedorLocal();
+        GestorUsuarios gestor = new GestorUsuarios(local);
         gestor.cargar();
 
+        // Para AGREGAR Pokemon al equipo si vale la pena ir a PokeAPI:
+        // trae cualquiera de los 1300, y cae solo en ProveedorLocal sin internet.
+        ProveedorPokemon api = new ProveedorPokeApi();
+
         SwingUtilities.invokeLater(() ->
-            new VentanaLogin(gestor, proveedor).setVisible(true));
+            new VentanaLogin(gestor, api).setVisible(true));
     }
 }

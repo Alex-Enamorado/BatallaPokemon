@@ -31,7 +31,7 @@ Para probar las estructuras hay una segunda clase con `main`:
 `src/batallapokemon/PruebasConsola.java`. Es una herramienta de desarrollo
 (el juego se juega 100% por GUI, como pide la consigna).
 
-## Estado actual: M0 — esqueleto
+## Estado actual: M0 + carril Dev 4
 
 Lo que **ya funciona**:
 
@@ -43,6 +43,10 @@ Lo que **ya funciona**:
 - `ProveedorLocal` con 16 Pokémon y sus ataques (funciona sin internet).
 - 32 sprites animados en `datos/sprites/` (fallback offline listo).
 - Layout de la ventana de batalla, diálogos de cambio / objetos / historial y vista de equipo.
+- **Carril Dev 4 completo**: `JsonMini`, `ProveedorPokeApi` (fetch + caché + fallback),
+  `GestorUsuarios` (login / crear / persistir / roster / rival), `VentanaLogin` y
+  `VentanaEquipo` (agregar / buscar / eliminar / mover). Verificado con
+  `PruebasDev4`: **40/40**.
 
 Lo que **falta** está marcado con `TODO Dev N` en el código, agrupado por carril:
 
@@ -51,10 +55,18 @@ Lo que **falta** está marcado con `TODO Dev N` en el código, agrupado por carr
 | **Dev 1** | `estructuras/ListaPokemon.java` | `buscar`, `eliminar`, `contarDisponibles`, `getActivo`, `setActivo`, `siguienteDisponible`, `modificar`, `todosDerrotados`, `moverAlPrimerLugar` |
 | **Dev 2** | `logica/MotorBatalla.java` | `atacar`, `calcularDanio`, `cambiarPokemon`, `usarObjeto`, `reiniciar` |
 | **Dev 3** | `gui/VentanaBatalla.java`, `gui/DialogoObjetos.java` | selección de ataque, diálogo de fin de batalla, destino del objeto |
-| **Dev 4** | `logica/GestorUsuarios.java`, `datos/ProveedorPokeApi.java`, `datos/JsonMini.java`, `gui/VentanaEquipo.java`, `gui/VentanaLogin.java` | login/crear/persistir usuarios, PokeAPI + caché, agregar/buscar/eliminar/mover |
+| ~~**Dev 4**~~ | — | ✅ listo |
 
-`PruebasConsola` es el marcador de Dev 1: arranca en **7 OK / 10 FALLAN** y la meta
-es 17/17.
+Hay dos harness de consola (herramientas de desarrollo, el juego se juega solo por GUI):
+
+- **`PruebasConsola`** — marcador de Dev 1. Arranca en 7 OK / 10 FALLAN; la meta es 17/17.
+- **`PruebasDev4`** — carril Dev 4. Está en 40/40. Hace backup de `datos/usuarios.txt`
+  y lo restaura, así que se puede correr sin ensuciar el roster.
+
+> Los botones **Buscar**, **Eliminar** y **Mover al 1er lugar** de `VentanaEquipo` ya
+> están escritos, pero van a responder "no está en el equipo" hasta que Dev 1
+> implemente `buscar`, `eliminar` y `moverAlPrimerLugar` en `ListaPokemon`. No es un
+> bug de la ventana.
 
 ## Reglas del equipo
 

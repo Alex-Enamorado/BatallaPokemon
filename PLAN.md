@@ -35,7 +35,7 @@ BatallaPokemon/
 ├─ README.md                  ← cómo correrlo en IntelliJ + capturas
 ├─ datos/                     ← caché + fallback offline (SE COMMITEA)
 │  ├─ usuarios.txt
-│  ├─ pokemon/<id>.json
+│  ├─ pokemon/<nombre>.json   (caché local, NO se commitea: 420 KB c/u)
 │  └─ sprites/<id>.gif       (32 sprites animados ya commiteados)
 └─ src/batallapokemon/
    ├─ Main.java
@@ -159,7 +159,9 @@ Espalda:          https://raw.githubusercontent.com/PokeAPI/sprites/master/sprit
 4. Toda descarga va dentro de un `SwingWorker` para no congelar la ventana.
 5. La **potencia** de los ataques NO se pide a la API (serían 4 requests extra por Pokémon): se toma el *nombre* del movimiento de la API y la potencia de una tabla fija por slot (40 / 60 / 80 / 90).
 
-Antes de la entrega: correr el juego una vez con internet para llenar `datos/` y **commitear la caché**.
+**Qué se commitea y qué no:** los sprites sí (`datos/sprites/`, ~1.8 MB, son el fallback
+visual). El JSON de la API **no**: pesa ~420 KB por Pokémon y se regenera solo. El modo
+offline lo garantizan `ProveedorLocal` (16 Pokémon) + esos sprites.
 
 ---
 
@@ -170,7 +172,7 @@ Antes de la entrega: correr el juego una vez con internet para llenar `datos/` y
 | **M0** | Repo + `PLAN.md` + esqueleto que **compila** + sprites de respaldo + `.gitignore`. Se sube el link. | Todos | ☑ |
 | **M1** | `ListaPokemon` + modelos + `ProveedorLocal` con 15 Pokémon → **desbloquea a Dev 3 y 4** | Dev 1 | ☐ |
 | **M2** | Ventana de batalla con sprites y barras de HP + `MotorBatalla.atacar()` funcionando de punta a punta | Dev 2 + Dev 3 | ☐ |
-| **M3** | Login/usuarios, `VentanaEquipo` (agregar/buscar/eliminar), diálogos CAMBIAR / OBJETOS / MI EQUIPO / HISTORIAL, PokeAPI en vivo | Dev 3 + Dev 4 | ☐ |
+| **M3** | Login/usuarios, `VentanaEquipo`, PokeAPI en vivo ✅ Dev 4 · faltan los diálogos de Dev 3 | Dev 3 + Dev 4 | ◐ |
 | **M4** | Extra: mover al primer lugar · reiniciar partida · estadísticas · victoria/derrota | Dev 1 + Dev 2 | ☐ |
 | **M5** | Día de integración: todos prueban juntos, caché commiteada, README con capturas | Todos | ☐ |
 
