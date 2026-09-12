@@ -78,14 +78,15 @@ public class ListaPokemon {
     }
 
     public boolean estaVacia() { return cabeza == null; }
-
-    // ------------------------------------------------------- TODO  DEV 1
-
-    /**
-     * TODO: recorrer desde la cabeza comparando con equalsIgnoreCase
-     * sobre getNombre(). Devolver el Pokemon o null si no esta.
-     */
+    
     public Pokemon buscar(String nombre) {
+        NodoPokemon actual = cabeza;
+        while(actual != null){
+            if(acutal.getPokemon().getNombre().equalsIgnoreCase(nombre)){
+                return actual.getPokemon();
+            }
+            actual = actual.getSiguiente();
+        }
         return null;
     }
 
